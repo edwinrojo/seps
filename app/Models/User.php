@@ -16,6 +16,7 @@ use Filament\Models\Contracts\HasName;
 use Illuminate\Support\Facades\Storage;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use app\Models\Supplier;
 
 class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, HasEmailAuthentication, HasAppAuthentication, HasAppAuthenticationRecovery, MustVerifyEmail
 {
@@ -66,6 +67,11 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
         ];
     }
 
+    public function supplier()
+    {
+        return $this->hasOne(Supplier::class);
+    }
+
     public function getFilamentName(): string
     {
         return $this->name;
@@ -78,20 +84,20 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->role === 'administrator';
+        return $this->role === 'administrator' || $this->role === 'supplier';
     }
 
     public function getAppAuthenticationSecret(): ?string
     {
         // This method should return the user's saved app authentication secret.
-    
+
         return $this->app_authentication_secret;
     }
 
     public function saveAppAuthenticationSecret(?string $secret): void
     {
         // This method should save the user's app authentication secret.
-    
+
         $this->app_authentication_secret = $secret;
         $this->save();
     }
@@ -101,7 +107,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
         // In a user's authentication app, each account can be represented by a "holder name".
         // If the user has multiple accounts in your app, it might be a good idea to use
         // their email address as then they are still uniquely identifiable.
-    
+
         return $this->email;
     }
 
@@ -111,7 +117,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
     public function getAppAuthenticationRecoveryCodes(): ?array
     {
         // This method should return the user's saved app authentication recovery codes.
-    
+
         return $this->app_authentication_recovery_codes;
     }
 
@@ -121,7 +127,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
     public function saveAppAuthenticationRecoveryCodes(?array $codes): void
     {
         // This method should save the user's app authentication recovery codes.
-    
+
         $this->app_authentication_recovery_codes = $codes;
         $this->save();
     }
@@ -129,14 +135,14 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
     public function hasEmailAuthentication(): bool
     {
         // This method should return true if the user has enabled email authentication.
-        
+
         return $this->has_email_authentication;
     }
 
     public function toggleEmailAuthentication(bool $condition): void
     {
         // This method should save whether or not the user has enabled email authentication.
-    
+
         $this->has_email_authentication = $condition;
         $this->save();
     }

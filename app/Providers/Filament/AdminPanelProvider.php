@@ -21,6 +21,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Support\Enums\Width;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Auth\MultiFactor\Email\EmailAuthentication;
+use App\Filament\Pages\Auth\EditProfile;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -58,7 +59,7 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->profile(isSimple: false)
+            ->profile(EditProfile::class, isSimple: false)
             ->spa()
             ->unsavedChangesAlerts()
             ->maxContentWidth(Width::Full)

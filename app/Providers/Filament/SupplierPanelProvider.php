@@ -18,13 +18,12 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Filament\Support\Enums\Width;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Auth\MultiFactor\Email\EmailAuthentication;
 use Filament\Navigation\NavigationItem;
 use Filament\Support\Icons\Heroicon;
 use App\Filament\Pages\Auth\EditProfile;
-use App\Filament\AvatarProviders\BoringAvatarsProvider;
+use App\Filament\Pages\Auth\RegisterPage;
 
 class SupplierPanelProvider extends PanelProvider
 {
@@ -34,6 +33,7 @@ class SupplierPanelProvider extends PanelProvider
             ->id('supplier')
             ->path('supplier')
             ->login()
+            ->passwordReset()
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -66,11 +66,13 @@ class SupplierPanelProvider extends PanelProvider
                     ->icon(Heroicon::User)
                     ->label('User Profile')
                     ->url('/supplier/profile')
+                    ->isActiveWhen(fn () => request()->routeIs('filament.supplier.auth.profile')),
             ])
             ->profile(EditProfile::class, isSimple: false)
+            ->registration(RegisterPage::class)
+            ->emailVerification()
             ->spa()
             ->unsavedChangesAlerts()
-            // ->maxContentWidth(Width::Full)
             ->topNavigation()
             ->multiFactorAuthentication([
                 AppAuthentication::make()

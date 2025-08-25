@@ -8,7 +8,6 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Schema;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Filament\Schemas\Components\Section;
-use Filament\Actions;
 
 class EditProfile extends BaseEditProfile
 {
@@ -49,11 +48,9 @@ class EditProfile extends BaseEditProfile
                             ->required()
                             ->maxLength(255),
                         TextInput::make('middle_name')
-                            ->label('Middle Name')
-                            ->required(),
+                            ->label('Middle Name'),
                         TextInput::make('suffix')
-                            ->label('Suffix')
-                            ->required(),
+                            ->label('Suffix'),
                         TextInput::make('contact_number')
                             ->label('Contact Number')
                             ->prefix('+63')
@@ -66,7 +63,21 @@ class EditProfile extends BaseEditProfile
                         $this->getPasswordConfirmationFormComponent(),
                         $this->getSaveFormAction()->formId('form'),
                     ]),
+                    Section::make('Multi-Factor Authentication')
+                        ->description('Enhance the security of your account')
+                        ->schema([
+                            $this->getMultiFactorAuthenticationContentComponent()
+                        ]),
             ])->columns(2);
+    }
+
+    public function content(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                $this->getFormContentComponent(),
+                // Do NOT include the MFA component here
+            ]);
     }
 
     protected function getFormActions(): array
