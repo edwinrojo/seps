@@ -35,7 +35,7 @@ class SupplierPanelProvider extends PanelProvider
             ->login()
             ->passwordReset()
             ->colors([
-                'primary' => Color::Amber,
+                // 'primary' => Color::Amber,
             ])
             ->discoverResources(in: app_path('Filament/Supplier/Resources'), for: 'App\Filament\Supplier\Resources')
             ->discoverPages(in: app_path('Filament/Supplier/Pages'), for: 'App\Filament\Supplier\Pages')
@@ -82,4 +82,5 @@ class SupplierPanelProvider extends PanelProvider
                 EmailAuthentication::make(),
             ]);
     }
+
 }

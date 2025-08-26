@@ -16,7 +16,7 @@ use Filament\Models\Contracts\HasName;
 use Illuminate\Support\Facades\Storage;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use app\Models\Supplier;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, HasEmailAuthentication, HasAppAuthentication, HasAppAuthenticationRecovery, MustVerifyEmail
 {
@@ -67,7 +67,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
         ];
     }
 
-    public function supplier()
+    public function supplier(): HasOne
     {
         return $this->hasOne(Supplier::class);
     }
@@ -84,7 +84,14 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->role === 'administrator' || $this->role === 'supplier';
+        switch ($panel->getId()) {
+            case 'admin':
+                return $this->role === 'administrator';
+            case 'supplier':
+                return $this->role === 'supplier';
+            default:
+                return false;
+        }
     }
 
     public function getAppAuthenticationSecret(): ?string
