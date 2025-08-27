@@ -54,4 +54,31 @@ class PSGC
             ->mapWithKeys(fn ($barangay) => [$barangay['code'] => $barangay['name']])
             ->toArray();
     }
+
+    public static function getProvinceName(string $provinceCode): ?string
+    {
+        $provinces = static::loadJson('geo/provinces.json');
+        return collect($provinces)
+            ->firstWhere('code', $provinceCode)['name'] ?? null;
+    }
+
+    public static function getMunicipalityName(string $municipalityCode): ?string
+    {
+        $municipalities = static::loadJson('geo/municipalities.json');
+        $all = collect($municipalities)->flatten(1);
+        return $all->firstWhere('code', $municipalityCode)['name'] ?? null;
+    }
+
+    public static function getBarangayName(string $barangayCode): ?string
+    {
+        $barangays = static::loadJson('geo/barangays.json');
+        foreach ($barangays as $municipalityBarangays) {
+            foreach ($municipalityBarangays as $barangay) {
+                if ($barangay['code'] === $barangayCode) {
+                    return $barangay['name'];
+                }
+            }
+        }
+        return null;
+    }
 }

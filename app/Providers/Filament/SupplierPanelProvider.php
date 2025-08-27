@@ -68,6 +68,7 @@ class SupplierPanelProvider extends PanelProvider
                     ->url('/supplier/profile')
                     ->isActiveWhen(fn () => request()->routeIs('filament.supplier.auth.profile')),
             ])
+            ->viteTheme('resources/css/filament/supplier/theme.css')
             ->profile(EditProfile::class, isSimple: false)
             ->registration(RegisterPage::class)
             ->emailVerification()

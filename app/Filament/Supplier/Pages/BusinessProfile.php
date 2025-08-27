@@ -16,12 +16,13 @@ use Filament\Support\Enums\TextSize;
 use Filament\Support\Enums\FontWeight;
 use Filament\Forms\Components\Repeater;
 use Filament\Support\Enums\Alignment;
-use app\Models\Supplier;
+use App\Models\Supplier;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use Illuminate\Support\Facades\Http;
 use Filament\Infolists\Components\RepeatableEntry;
-use App\Filament\Services\PSGC;
+use App\Models\Province;
+use App\Models\Municipality;
+use App\Models\Barangay;
 
 class BusinessProfile extends Page
 {
@@ -53,46 +54,88 @@ class BusinessProfile extends Page
                     ->schema([
                         TextEntry::make('business_name')
                             ->icon(Heroicon::BuildingOffice2)
-                            ->iconColor('primary')
                             ->color('primary')
                             ->size(TextSize::Large)
                             ->weight(FontWeight::Black)
                             ->columnSpan(2),
                         TextEntry::make('email')
+                            ->icon(Heroicon::Envelope)
                             ->label('Email Address')
-                            ->iconColor('primary')
                             ->color('primary')
                             ->weight(FontWeight::Bold),
                         TextEntry::make('website')
+                            ->icon(Heroicon::GlobeAlt)
                             ->label('Website')
                             ->color('primary')
                             ->weight(FontWeight::Bold),
                         TextEntry::make('mobile_number')
+                            ->icon(Heroicon::DevicePhoneMobile)
                             ->prefix('+63 ')
                             ->label('Mobile Number')
                             ->color('primary')
                             ->weight(FontWeight::Bold),
                         TextEntry::make('landline_number')
+                            ->icon(Heroicon::Phone)
                             ->label('Landline Number')
                             ->color('primary')
                             ->weight(FontWeight::Bold),
                     ])
+                    ->collapsible()
                     ->columns(2),
                 Section::make('Address Information')
                     ->description('Below is the address information for your business. You can add multiple addresses if needed.')
                     ->icon(Heroicon::Map)
                     ->schema([
                         RepeatableEntry::make('addresses')
-                            ->label('Business Addresses')
+                            ->hiddenLabel()
                             ->schema([
                                 TextEntry::make('line_1')
-                                    ->label('Address Line 1')
+                                    ->hiddenLabel()
+                                    ->formatStateUsing(function ($state, $record) {
+                                        $parts = [$state];
+                                        if (!empty($record->line_2)) {
+                                            $parts[] = $record->line_2;
+                                        }
+                                        $parts[] = $record->barangay->name;
+                                        $parts[] = $record->municipality->name;
+                                        $parts[] = $record->province->name;
+                                        $parts[] = $record->zip_code;
+                                        $parts[] = $record->country;
+                                        return implode(', ', $parts);
+                                    })
+                                    // ->weight(FontWeight::Bold)
+                                    ->size(TextSize::Medium)
                                     ->color('primary')
-                                    ->weight(FontWeight::Bold)
                                     ->columnSpan(2),
+                                TextEntry::make('line_1')
+                                    ->label('Status')
+                                    ->badge()
+                                    ->formatStateUsing(function ($record) {
+                                        return $record->statuses()->latest()->first()->status ?? 'Pending for Validation';
+                                    })
+                                    ->color(function ($record) {
+                                        $status = $record->statuses()->latest()->first()->status ?? 'Pending for Validation';
+                                        return match ($status) {
+                                            'Validated' => 'success',
+                                            'Rejected' => 'danger',
+                                            'Pending for Validation' => 'warning',
+                                            default => 'secondary',
+                                        };
+                                    })
+                                    ->icon(Heroicon::Clock),
+                                TextEntry::make('line_1')
+                                    ->label('Last Status Updated')
+                                    ->icon(Heroicon::CalendarDays)
+                                    ->iconColor('primary')
+                                    ->formatStateUsing(function ($record) {
+                                        $status = $record->statuses()->latest()->first();
+                                        return $status ? $status->status_date->format('F j, Y, g:i a') : $record->created_at->format('F j, Y, g:i a');
+                                    })
+                                    ->color('primary'),
                             ])
                             ->columns(2)
-                    ]),
+                    ])
+                    ->collapsible(),
             ]);
     }
 
@@ -142,6 +185,7 @@ class BusinessProfile extends Page
                         ->body('Changes to the record have been saved.')
                         ->send();
                 })
+                ->icon(Heroicon::PencilSquare)
                 ->modalWidth(Width::FiveExtraLarge)
                 ->closeModalByClickingAway(false)
                 ->closeModalByEscaping(false)
@@ -253,25 +297,26 @@ class BusinessProfile extends Page
                                 ->placeholder('e.g., Suite 100')
                                 ->maxLength(255)
                                 ->columnSpan(2),
-                            Select::make('province')
+                            Select::make('province_id')
                                 ->searchable()
                                 ->required()
-                                ->options(fn () => PSGC::getProvinces())
+                                ->options(fn () => Province::pluck('name', 'id')->toArray())
                                 ->reactive()
-                                ->afterStateUpdated(fn ($state, callable $set) => $set('municipality_city', null)),
-                            Select::make('municipality_city')
+                                ->afterStateUpdated(fn ($state, callable $set) => $set('municipality', null)),
+                            Select::make('municipality_id')
                                 ->label('Municipality/City')
                                 ->searchable()
                                 ->required()
-                                ->options(fn (callable $get) => $get('province') ? PSGC::getMunicipalities($get('province')) : [])
+                                ->options(fn (callable $get) => $get('province_id') ? Municipality::where('province_id', $get('province_id'))->pluck('name', 'id')->toArray() : [])
                                 ->reactive()
-                                ->afterStateUpdated(fn ($state, callable $set) => $set('barangay', null)),
-                            Select::make('barangay')
+                                ->afterStateUpdated(fn ($state, callable $set) => $set('barangay_id', null)),
+                            Select::make('barangay_id')
                                 ->label('Barangay')
                                 ->searchable()
                                 ->required()
-                                ->options(fn (callable $get) => $get('municipality_city') ? PSGC::getBarangays($get('municipality_city')) : []),
+                                ->options(fn (callable $get) => $get('municipality_id') ? Barangay::where('municipality_id', $get('municipality_id'))->pluck('name', 'id')->toArray() : []),
                             TextInput::make('country')
+                                ->default('Philippines')
                                 ->label('Country')
                                 ->placeholder('e.g., Philippines')
                                 ->required()

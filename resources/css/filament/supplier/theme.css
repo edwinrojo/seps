@@ -1,0 +1,8 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/Supplier/**/*';
+@source '../../../../resources/views/filament/supplier/**/*';
+
+.fi-in-repeatable-item {
+    background-color: #fbfbfb;
+}
