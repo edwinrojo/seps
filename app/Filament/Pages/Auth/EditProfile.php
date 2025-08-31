@@ -8,6 +8,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Schema;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Filament\Schemas\Components\Section;
+use Illuminate\Support\Facades\Storage;
 
 class EditProfile extends BaseEditProfile
 {
@@ -83,5 +84,15 @@ class EditProfile extends BaseEditProfile
     protected function getFormActions(): array
     {
         return []; // Prevents default form actions from rendering
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $user = request()->user();
+        if (!isset($data['avatar']) || ($data['avatar'] != $user->avatar && $user->avatar != null)) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+
+        return $data;
     }
 }

@@ -4,5 +4,8 @@
 @source '../../../../resources/views/filament/supplier/**/*';
 
 .fi-in-repeatable-item {
-    background-color: #fbfbfb;
+    background-color: #f8f8f8;
+}
+.dark .fi-in-repeatable-item {
+    background-color: #23272f;
 }

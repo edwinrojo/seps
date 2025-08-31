@@ -16,8 +16,8 @@ return new class extends Migration
             $table->ulidMorphs('site_imageable');
             $table->text('file_path');
             $table->unsignedBigInteger('file_size');
-            $table->geography('location', subtype: 'point', srid: 4326);
-            $table->timestamp('captured_at', precision: 0);
+            $table->geography('location', subtype: 'point', srid: 4326)->nullable();
+            $table->timestamp('captured_at', precision: 0)->nullable();
             $table->timestamps();
         });
     }

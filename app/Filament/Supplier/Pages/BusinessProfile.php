@@ -7,6 +7,7 @@ use BackedEnum;
 use Filament\Support\Icons\Heroicon;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
 use Filament\Support\Enums\Width;
 use Filament\Schemas\Components\Section;
 use Filament\Notifications\Notification;
@@ -19,10 +20,14 @@ use Filament\Support\Enums\Alignment;
 use App\Models\Supplier;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use App\Models\Province;
 use App\Models\Municipality;
 use App\Models\Barangay;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Filament\Schemas\Components\Utilities\Set;
 
 class BusinessProfile extends Page
 {
@@ -34,13 +39,15 @@ class BusinessProfile extends Page
 
     protected ?string $subheading = 'Manage your business profile information and upload necessary documents to verify your business\' identity and eligibility.';
 
+    protected $listeners = ['refreshInfolist' => '$refresh'];
+
     public ?Supplier $record = null;
 
     public $defaultAction = 'onboarding';
 
     public function mount(): void
     {
-        $this->record = auth()->user()->supplier;
+        $this->record = request()->user()?->supplier;
     }
 
     public function infolist(Schema $schema): Schema
@@ -53,8 +60,9 @@ class BusinessProfile extends Page
                     ->icon(Heroicon::InformationCircle)
                     ->schema([
                         TextEntry::make('business_name')
+                            ->extraAttributes(['style' => 'font-size: 1.5rem;'])
                             ->icon(Heroicon::BuildingOffice2)
-                            ->color('primary')
+                            ->color('info')
                             ->size(TextSize::Large)
                             ->weight(FontWeight::Black)
                             ->columnSpan(2),
@@ -90,7 +98,7 @@ class BusinessProfile extends Page
                             ->hiddenLabel()
                             ->schema([
                                 TextEntry::make('line_1')
-                                    ->hiddenLabel()
+                                    ->label('Address')
                                     ->formatStateUsing(function ($state, $record) {
                                         $parts = [$state];
                                         if (!empty($record->line_2)) {
@@ -103,14 +111,86 @@ class BusinessProfile extends Page
                                         $parts[] = $record->country;
                                         return implode(', ', $parts);
                                     })
-                                    // ->weight(FontWeight::Bold)
-                                    ->size(TextSize::Medium)
-                                    ->color('primary')
-                                    ->columnSpan(2),
+                                    ->icon(Heroicon::BuildingStorefront)
+                                    ->size(TextSize::Large)
+                                    ->weight(FontWeight::Bold)
+                                    ->color('info')
+                                    ->columnSpan(3),
+                                Section::make('Storefront Image')
+                                    ->schema([
+                                        ImageEntry::make('site_image.file_path')
+                                            ->hiddenLabel()
+                                            ->state(function ($record) {
+                                                return $record->site_image ? $record->site_image->file_path : 'storage/site_images/placeholder.png';
+                                            })
+                                            ->defaultImageUrl(url('storage/site_images/placeholder.png'))
+                                            ->imageWidth(300)
+                                            ->imageHeight(200)
+                                            ->url(fn ($state) => $state ? asset('storage/' . ltrim($state, '/')) : null)
+                                            ->openUrlInNewTab()
+                                            ->disk('public'),
+                                        Action::make('add_site_image')
+                                            ->label('Add / Update Storefront Photo')
+                                            ->modal()
+                                            ->modalHeading('Add / Update Storefront Image')
+                                            ->modalDescription('Upload a new storefront image or update the existing one.')
+                                            ->action(function ($record, array $data, Set $set, $get): void {
+                                                // Action logic for adding/updating site image
+                                                $record->site_image?->delete();
+                                                if ($record->site_image?->file_path) {
+                                                    Storage::disk('public')->delete($record->site_image?->file_path);
+                                                }
+
+                                                $sizeInBytes = Storage::disk('public')->size($data['site_image']);
+
+                                                $record->site_image()->create([
+                                                    'file_path' => $data['site_image'],
+                                                    'file_size' => $sizeInBytes,
+                                                ]);
+                                                $record->save();
+
+                                                Notification::make()
+                                                    ->title('Site Image Saved')
+                                                    ->success()
+                                                    ->body('The site image has been successfully saved.')
+                                                    ->send();
+                                            })
+                                            ->schema([
+                                                FileUpload::make('site_image')
+                                                    ->disk('public')
+                                                    ->label('Site Image')
+                                                    ->imageEditor()
+                                                    ->image()
+                                                    ->getUploadedFileNameForStorageUsing(
+                                                        fn (TemporaryUploadedFile $file): string => (string) str($file->getClientOriginalName())
+                                                            ->prepend((string) now()->format('YmdHis') . '_')
+                                                    )
+                                                    ->directory('site_images')
+                                                    ->maxSize(2048) // 2MB
+                                                    ->moveFiles()
+                                                    ->required()
+                                                    ->imagePreviewHeight('200')
+                                                    ->columnSpan(2),
+                                            ])
+                                            ->after(fn ($livewire) => $livewire->dispatch('refreshInfolist'))
+                                            ->modalWidth(Width::Medium)
+                                            ->modalAlignment(Alignment::Center)
+                                            ->modalIcon(Heroicon::Camera)
+                                            ->modalIconColor('primary')
+                                            ->closeModalByClickingAway(false)
+                                            ->closeModalByEscaping(false)
+                                            ->modalAutofocus(false)
+                                            ->modalSubmitActionLabel('Save Image')
+                                            ->icon(Heroicon::Camera)
+                                            ->color('gray'),
+                                    ])
+                                    ->icon(Heroicon::Photo)
+                                    ->collapsible()
+                                    ->collapsed(),
                                 TextEntry::make('line_1')
                                     ->label('Status')
                                     ->badge()
-                                    ->formatStateUsing(function ($record) {
+                                    ->state(function ($record) {
                                         return $record->statuses()->latest()->first()->status ?? 'Pending for Validation';
                                     })
                                     ->color(function ($record) {
@@ -133,7 +213,7 @@ class BusinessProfile extends Page
                                     })
                                     ->color('primary'),
                             ])
-                            ->columns(2)
+                            ->columns(3)
                     ])
                     ->collapsible(),
             ]);
@@ -177,14 +257,16 @@ class BusinessProfile extends Page
                         $supplier->addresses()->create($addressData);
                     }
 
-                    $this->record = auth()->user()->supplier;
-
                     Notification::make()
                         ->title('Saved successfully')
                         ->success()
                         ->body('Changes to the record have been saved.')
                         ->send();
                 })
+                ->after(fn ($livewire) => $livewire->dispatch('refreshInfolist'))
+                ->slideOver()
+                ->stickyModalHeader()
+                ->stickyModalFooter()
                 ->icon(Heroicon::PencilSquare)
                 ->modalWidth(Width::FiveExtraLarge)
                 ->closeModalByClickingAway(false)
@@ -213,9 +295,7 @@ class BusinessProfile extends Page
             })
             ->schema($this->businessInformationSchema())
             ->action(function (array $data): void {
-                auth()->user()->supplier()->create($data);
-
-                $this->record = auth()->user()->supplier;
+                request()->user()?->supplier()->create($data);
 
                 Notification::make()
                     ->title('Saved successfully')
@@ -223,6 +303,7 @@ class BusinessProfile extends Page
                     ->body('Changes to the record have been saved.')
                     ->send();
             })
+            ->after(fn ($livewire) => $livewire->dispatch('refreshInfolist'))
             ->modalWidth(Width::FiveExtraLarge)
             ->closeModalByClickingAway(false)
             ->closeModalByEscaping(false)

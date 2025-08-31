@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
         FilamentColor::register([
             'danger' => Color::Red,
             'gray' => Color::Zinc,
-            'info' => Color::Blue,
+            'info' => Color::Cyan,
             'primary' => Color::Pink,
             'success' => Color::Green,
             'warning' => Color::Amber,
