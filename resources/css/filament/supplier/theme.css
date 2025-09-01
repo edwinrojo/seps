@@ -3,9 +3,9 @@
 @source '../../../../app/Filament/Supplier/**/*';
 @source '../../../../resources/views/filament/supplier/**/*';
 
-.fi-in-repeatable-item {
+/* .fi-in-repeatable-item {
     background-color: #f8f8f8;
 }
 .dark .fi-in-repeatable-item {
     background-color: #23272f;
-}
+} */
