@@ -62,6 +62,9 @@ class BusinessProfile extends Page
             Action::make('Manage Profile')
                 ->modal()
                 ->modalHeading('Manage Your Business Profile')
+                ->modalDescription('Update your business profile information.')
+                ->modalSubmitAction(fn (Action $action) => $action->label('Create Address')->icon(Heroicon::OutlinedPlusCircle))
+                ->modalCancelAction(fn (Action $action) => $action->label('Cancel')->icon(Heroicon::XMark))
                 ->fillForm(function (): array {
                     $supplier = $this->record;
                     return $supplier ? [
