@@ -1,0 +1,29 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+.min-width-column {
+    width: 50px !important; /* Forces the column to be as narrow as possible */
+    white-space: nowrap !important; /* Prevents text wrapping */
+}
+
+.fi-ac-btn-action.danger-icon-color .fi-icon {
+    color: var(--danger-500) !important;
+}
+
+.fi-ac-btn-action.primary-icon-color .fi-icon {
+    color: var(--primary-500) !important;
+}
+
+.fi-ac-btn-action.success-icon-color .fi-icon {
+    color: var(--success-500) !important;
+}
+
+.fi-ac-btn-action.warning-icon-color .fi-icon {
+    color: var(--warning-500) !important;
+}
+
+.fi-ac-btn-action.info-icon-color .fi-icon {
+    color: var(--info-500) !important;
+}

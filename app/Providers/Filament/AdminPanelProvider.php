@@ -22,6 +22,7 @@ use Filament\Support\Enums\Width;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Auth\MultiFactor\Email\EmailAuthentication;
 use App\Filament\Pages\Auth\EditProfile;
+use App\Filament\Pages\Auth\Login;
 use Filament\Navigation\NavigationItem;
 use Filament\Support\Icons\Heroicon;
 
@@ -33,7 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
+            ->login(Login::class)
             ->colors([
                 // 'primary' => Color::Amber,
             ])
@@ -68,6 +69,7 @@ class AdminPanelProvider extends PanelProvider
                     ->url('/admin/profile')
                     ->isActiveWhen(fn () => request()->routeIs('filament.admin.auth.profile')),
             ])
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->profile(EditProfile::class, isSimple: false)
             ->emailVerification()
             ->spa()

@@ -23,6 +23,7 @@ use Filament\Auth\MultiFactor\Email\EmailAuthentication;
 use Filament\Navigation\NavigationItem;
 use Filament\Support\Icons\Heroicon;
 use App\Filament\Pages\Auth\EditProfile;
+use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Auth\RegisterPage;
 
 class SupplierPanelProvider extends PanelProvider
@@ -70,6 +71,7 @@ class SupplierPanelProvider extends PanelProvider
             ])
             ->viteTheme('resources/css/filament/supplier/theme.css')
             ->profile(EditProfile::class, isSimple: false)
+            ->login(Login::class)
             ->registration(RegisterPage::class)
             ->emailVerification()
             ->spa()

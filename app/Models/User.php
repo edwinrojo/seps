@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Filament\Services\AvatarProvider;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
 use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
@@ -37,6 +38,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
         'email',
         'password',
         'contact_number',
+        'status',
         'avatar'
     ];
 
@@ -79,7 +81,9 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
 
     public function getFilamentAvatarUrl(): ?string
     {
-        return $this->avatar ? Storage::url($this->avatar) : null;
+        if (empty($this->avatar))
+            return (new AvatarProvider())->get($this);
+        return Storage::url($this->avatar);
     }
 
     public function canAccessPanel(Panel $panel): bool
