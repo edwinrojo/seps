@@ -24,12 +24,16 @@ class UsersTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                $currentUserId = Filament::auth()->user()?->id;
+                if ($currentUserId) {
+                    $query->where('id', '!=', $currentUserId);
+                }
+                return $query;
+            })
             ->columns([
                 ImageColumn::make('avatar')
                     ->defaultImageUrl(function ($record) {
-                        return $record->getFilamentAvatarUrl();
-                    })
-                    ->state(function ($record) {
                         return $record->getFilamentAvatarUrl();
                     })
                     ->grow(false)
@@ -46,7 +50,7 @@ class UsersTable
                             ->orderBy('first_name', $direction);
                     })
                     ->weight(FontWeight::Bold)
-                    ->description(fn ($record) => ucfirst($record->role))
+                    ->description(fn ($record) => $record->role->getLabel())
                     ->searchable(),
                 TextColumn::make('supplier.business_name')
                     ->icon(Heroicon::BuildingStorefront)

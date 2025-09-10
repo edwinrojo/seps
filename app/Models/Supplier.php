@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ProcType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,7 +20,14 @@ class Supplier extends Model
         'email',
         'mobile_number',
         'landline_number',
+        'supplier_type',
     ];
+
+    protected function casts(): array {
+        return [
+            'supplier_type' => ProcType::class,
+        ];
+    }
 
     public function addresses(): HasMany
     {

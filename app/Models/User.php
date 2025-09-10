@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UserRole;
 use App\Filament\Services\AvatarProvider;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
@@ -66,12 +67,23 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
             'password' => 'hashed',
             'app_authentication_recovery_codes' => 'encrypted:array',
             'has_email_authentication' => 'boolean',
+            'role' => UserRole::class,
         ];
     }
 
     public function supplier(): HasOne
     {
         return $this->hasOne(Supplier::class);
+    }
+
+    public function endUser(): HasOne
+    {
+        return $this->hasOne(EndUser::class, 'user_id');
+    }
+
+    public function twg(): HasOne
+    {
+        return $this->hasOne(Twg::class, 'user_id');
     }
 
     public function getFilamentName(): string
@@ -90,9 +102,9 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
     {
         switch ($panel->getId()) {
             case 'admin':
-                return $this->role === 'administrator';
+                return $this->role === UserRole::Administrator;
             case 'supplier':
-                return $this->role === 'supplier';
+                return $this->role === UserRole::Supplier;
             default:
                 return false;
         }

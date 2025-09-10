@@ -2,6 +2,7 @@
 
 namespace App\Filament\Supplier\Pages;
 
+use App\Enums\ProcType;
 use App\Filament\Resources\Suppliers\Schemas\SupplierInfolist;
 use Filament\Pages\Page;
 use BackedEnum;
@@ -74,6 +75,7 @@ class BusinessProfile extends Page
                         'mobile_number' => $supplier->mobile_number,
                         'landline_number' => $supplier->landline_number,
                         'addresses' => $supplier->addresses,
+                        'supplier_type' => $supplier->supplier_type,
                     ] : [];
                 })
                 ->schema(array_merge($this->businessInformationSchema(), $this->addressSchema()))
@@ -191,6 +193,11 @@ class BusinessProfile extends Page
                         ->label('Landline Number')
                         ->placeholder('e.g., (082) 123-4567')
                         ->maxLength(255),
+                    Select::make('supplier_type')
+                        ->native(false)
+                        ->searchable()
+                        ->options(ProcType::class)
+                        ->required()
                 ])
                 ->columns(2),
         ];

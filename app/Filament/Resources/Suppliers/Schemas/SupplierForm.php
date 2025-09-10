@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Suppliers\Schemas;
 
+use App\Enums\ProcType;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -49,6 +51,11 @@ class SupplierForm
                             ->label('Landline Number')
                             ->placeholder('e.g., (082) 123-4567')
                             ->maxLength(255),
+                        Select::make('supplier_type')
+                            ->native(false)
+                            ->searchable()
+                            ->options(ProcType::class)
+                            ->required()
                     ])
                     ->columns(2)
                     ->columnSpanFull(),

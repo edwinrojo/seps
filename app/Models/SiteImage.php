@@ -15,7 +15,6 @@ class SiteImage extends Model
         'site_imageable_id',
         'file_path',
         'file_size',
-        'location',
         'captured_at',
     ];
 

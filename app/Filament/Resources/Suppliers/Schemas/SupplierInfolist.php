@@ -36,27 +36,29 @@ class SupplierInfolist
                             ->size(TextSize::Large)
                             ->weight(FontWeight::Black)
                             ->columnSpan(2),
+                        TextEntry::make('supplier_type')
+                            ->color('info')
+                            ->label('Supplier Type')
+                            ->icon(Heroicon::Briefcase)
+                            ->weight(FontWeight::Bold)
+                            ->formatStateUsing(fn ($record) => $record->supplier_type->getLabel()),
                         TextEntry::make('email')
                             ->icon(Heroicon::Envelope)
                             ->label('Email Address')
-                            ->color('primary')
-                            ->weight(FontWeight::Bold),
+                            ->color('primary'),
                         TextEntry::make('website')
                             ->icon(Heroicon::GlobeAlt)
                             ->label('Website')
-                            ->color('primary')
-                            ->weight(FontWeight::Bold),
+                            ->color('primary'),
                         TextEntry::make('mobile_number')
                             ->icon(Heroicon::DevicePhoneMobile)
                             ->prefix('+63 ')
                             ->label('Mobile Number')
-                            ->color('primary')
-                            ->weight(FontWeight::Bold),
+                            ->color('primary'),
                         TextEntry::make('landline_number')
                             ->icon(Heroicon::Phone)
                             ->label('Landline Number')
-                            ->color('primary')
-                            ->weight(FontWeight::Bold),
+                            ->color('primary'),
                     ])
                     ->collapsible()
                     ->columns(2),
@@ -129,9 +131,6 @@ class SupplierInfolist
                                     ->schema([
                                         ImageEntry::make('site_image.file_path')
                                             ->hiddenLabel()
-                                            ->state(function ($record) {
-                                                return $record->site_image ? $record->site_image->file_path : 'storage/site_images/placeholder.png';
-                                            })
                                             ->defaultImageUrl(url('storage/site_images/placeholder.png'))
                                             ->url(fn ($state) => $state ? asset('storage/' . ltrim($state, '/')) : null)
                                             ->openUrlInNewTab()

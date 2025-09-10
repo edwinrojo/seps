@@ -77,7 +77,7 @@ class SuppliersTable
                     Action::make('assign')
                         ->hiddenLabel()
                         ->color('gray')
-                        ->tooltip('Assign to existing user account')
+                        ->tooltip('Assign/Edit user account')
                         ->extraAttributes(['class' => 'success-icon-color'])
                         ->icon(Heroicon::UserPlus)
                         ->modal()

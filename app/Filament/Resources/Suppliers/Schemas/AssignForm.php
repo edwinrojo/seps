@@ -18,6 +18,7 @@ class AssignForm
                 ->searchable()
                 ->searchPrompt('Search for a user account...')
                 ->prefixIcon(Heroicon::User)
+                ->preload()
                 ->options(fn ($record) => User::doesntHave('supplier')->where('role', 'supplier')->orWhere('id', $record->user_id)->pluck('name', 'id'))
                 ->afterLabel('Options are limited to supplier-role accounts.')
                 ->required(),
