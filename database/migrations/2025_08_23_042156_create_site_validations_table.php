@@ -15,7 +15,7 @@ return new class extends Migration
             $table->ulid('id')->primary();
             $table->foreignUlid('supplier_id')->constrained('suppliers')->cascadeOnDelete();
             $table->foreignUlid('address_id')->constrained('addresses')->cascadeOnDelete();
-            $table->foreignUlid('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignUlid('twg_id')->references('user_id')->on('twgs')->cascadeOnDelete();
             $table->dateTime('validation_date');
             $table->text('remarks')->nullable();
             $table->timestamps();

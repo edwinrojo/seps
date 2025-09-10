@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('site_images', function (Blueprint $table) {
+        Schema::create('offices', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->ulidMorphs('site_imageable');
-            $table->text('file_path');
-            $table->unsignedBigInteger('file_size');
-            $table->timestamp('captured_at', precision: 0)->nullable();
+            $table->string('title', 500);
+            $table->string('acronym', 255);
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('site_images');
+        Schema::dropIfExists('offices');
     }
 };

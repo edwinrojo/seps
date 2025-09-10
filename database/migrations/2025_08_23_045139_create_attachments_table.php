@@ -15,7 +15,6 @@ return new class extends Migration
             $table->ulid('id')->primary();
             $table->foreignUlid('supplier_id')->constrained('suppliers')->cascadeOnDelete();
             $table->foreignUlid('document_id')->nullable()->constrained('documents')->nullOnDelete();
-            $table->foreignUlid('document_classification_id')->nullable()->constrained('document_classifications')->nullOnDelete();
             $table->text('file_path');
             $table->unsignedBigInteger('file_size');
             $table->date('validity_date');

@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('site_images', function (Blueprint $table) {
-            $table->ulid('id')->primary();
-            $table->ulidMorphs('site_imageable');
-            $table->text('file_path');
-            $table->unsignedBigInteger('file_size');
-            $table->timestamp('captured_at', precision: 0)->nullable();
+        Schema::create('twgs', function (Blueprint $table) {
+            $table->foreignUlid('user_id')->primary()->references('id')->on('users')->cascadeOnDelete();
+            $table->foreignUlid('office_id')->constrained('offices')->cascadeOnDelete();
+            $table->string('position_title', 500);
+            $table->string('twg_type');
             $table->timestamps();
         });
     }
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('site_images');
+        Schema::dropIfExists('twgs');
     }
 };

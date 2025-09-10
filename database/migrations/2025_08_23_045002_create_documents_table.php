@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignUlid('document_type_id')->constrained('document_types')->cascadeOnDelete();
             $table->string('title');
             $table->text('description')->nullable();
+            $table->string('procurement_type');
+            $table->boolean('is_required')->default(false);
             $table->timestamps();
         });
     }

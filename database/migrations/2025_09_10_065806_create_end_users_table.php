@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('document_classifications', function (Blueprint $table) {
-            $table->ulid('id')->primary();
-            $table->foreignUlid('document_id')->constrained('documents')->cascadeOnDelete();
-            $table->string('title');
-            $table->text('description')->nullable();
+        Schema::create('end_users', function (Blueprint $table) {
+            $table->foreignUlid('user_id')->primary()->references('id')->on('users')->cascadeOnDelete();
+            $table->foreignUlid('office_id')->constrained('offices')->cascadeOnDelete();
+            $table->string('designation', 255);
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('document_classifications');
+        Schema::dropIfExists('end_users');
     }
 };
