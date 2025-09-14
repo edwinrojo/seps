@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('statuses', function (Blueprint $table) {
             $table->ulid('id')->primary();
+            $table->foreignUlid('user_id')->constrained('users')->cascadeOnDelete()->nullable();
             $table->ulidMorphs('statusable');
             $table->string('status');
             $table->text('remarks')->nullable();

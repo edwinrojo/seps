@@ -12,11 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('supplier_lobs', function (Blueprint $table) {
-            $table->ulid('id')->primary();
             $table->foreignUlid('supplier_id')->constrained('suppliers')->cascadeOnDelete();
             $table->foreignUlid('lob_category_id')->constrained('lob_categories')->cascadeOnDelete();
-            $table->foreignUlid('lob_subcategory_id')->constrained('lob_subcategories')->cascadeOnDelete();
+            $table->foreignUlid('lob_subcategory_id')->nullable()->constrained('lob_subcategories')->cascadeOnDelete();
             $table->timestamps();
+
+            $table->unique(['supplier_id', 'lob_category_id', 'lob_subcategory_id'], 'supplier_lob_unique');
         });
     }
 

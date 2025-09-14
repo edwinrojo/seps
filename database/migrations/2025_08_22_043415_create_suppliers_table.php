@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('mobile_number');
             $table->string('landline_number')->nullable();
+            $table->string('owner_name')->nullable();
             $table->string('supplier_type');
             $table->softDeletes();
             $table->timestamps();

@@ -11,6 +11,7 @@ class Status extends Model
     use HasUlids;
 
     protected $fillable = [
+        'user_id',
         'statusable_id',
         'statusable_type',
         'status',

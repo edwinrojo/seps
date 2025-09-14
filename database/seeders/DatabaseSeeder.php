@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\LobCategory;
 use App\Models\Office;
 use App\Models\Twg;
 use App\Models\User;
@@ -81,12 +82,53 @@ class DatabaseSeeder extends Seeder
             'id' => (string) Str::ulid(),
             'first_name' => 'Joyce',
             'last_name' => 'Rojo',
-            'middle_name' => 'Razonable',
+            'middle_name' => 'Gonida',
             'suffix' => '',
             'role' => 'supplier',
             'email' => 'joyce@local.dev',
             'contact_number' => '946-565-2778',
             'password' => bcrypt('1234'),
         ]);
+
+        $supplier_user->supplier()->create([
+            'business_name' => 'Wincy Pharmacy Incorporated',
+            'owner_name' => 'Joyce Gonida Rojo',
+            'email' => 'contact@wincypharmacy.com',
+            'website' => 'https://www.wincypharmacy.com',
+            'mobile_number' => '946-565-2778',
+            'landline_number' => '(082) 123-4567',
+            'supplier_type' => 'goods',
+        ]);
+
+        $lob_category1 = LobCategory::create([
+            'title' => 'Information Technology',
+            'description' => 'Category for IT-related products and services.',
+        ]);
+
+        $lob_category2 = LobCategory::create([
+            'title' => 'Office Supplies',
+            'description' => 'Category for general office supplies and equipment.',
+        ]);
+
+        $lob_category3 = LobCategory::create([
+            'title' => 'Construction Materials',
+            'description' => 'Category for materials used in construction projects.',
+        ]);
+
+        $lob_category1->lobSubcategories()->createMany([
+            ['title' => 'ICT Equipment', 'description' => 'Desktops, laptops, and accessories.'],
+            ['title' => 'Networking Equipment', 'description' => 'Routers, switches, and other networking devices.'],
+            ['title' => 'Software', 'description' => 'Operating systems, productivity software, and specialized applications.'],
+        ]);
+
+        $lob_category2->lobSubcategories()->createMany([
+            ['title' => 'Paper', 'description' => 'Various types of paper for printing and writing.'],
+            ['title' => 'Office Furniture', 'description' => 'Desks, chairs, and other office furniture.'],
+            ['title' => 'Stationery', 'description' => 'Pens, pencils, and other stationery items.'],
+        ]);
+
+        $this->call(ProvinceSeeder::class);
+        $this->call(MunicipalitySeeder::class);
+        $this->call(BarangaySeeder::class);
     }
 }

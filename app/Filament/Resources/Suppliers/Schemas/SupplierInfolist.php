@@ -36,6 +36,11 @@ class SupplierInfolist
                             ->size(TextSize::Large)
                             ->weight(FontWeight::Black)
                             ->columnSpan(2),
+                        TextEntry::make('owner_name')
+                            ->color('info')
+                            ->label('Owner Name')
+                            ->icon(Heroicon::User)
+                            ->weight(FontWeight::Bold),
                         TextEntry::make('supplier_type')
                             ->color('info')
                             ->label('Supplier Type')
@@ -62,6 +67,58 @@ class SupplierInfolist
                     ])
                     ->collapsible()
                     ->columns(2),
+                Section::make('Line of Business')
+                    ->description('Below are the line of business details you have provided. To make changes, click the "Manage Profile" button above.')
+                    ->icon(Heroicon::Briefcase)
+                    ->schema([
+                        TextEntry::make('business_name')
+                            ->formatStateUsing(function ($state): string {
+                                return 'No records available';
+                            })
+                            ->size(TextSize::Medium)
+                            ->alignCenter()
+                            ->hidden(fn ($record) => count($record->supplierLobs) > 0)
+                            ->hiddenLabel()
+                            ->icon(Heroicon::OutlinedXCircle)
+                            ->color('gray')
+                            ->columnSpan(2),
+                        RepeatableEntry::make('supplierLobs')
+                            ->hiddenLabel()
+                            ->grid(2)
+                            ->columnSpanFull()
+                            ->hidden(fn ($record) => count($record->supplierLobs) === 0)
+                            ->state(function ($record) {
+                                $data['supplierLobs'] = $record->supplierLobs()
+                                    ->get()
+                                    ->groupBy('lob_category_id')
+                                    ->map(function ($items, $categoryId) {
+                                        return [
+                                            'lobCategory' => $items->first()->lobCategory,
+                                            'lob_subcategories_list' => $items->pluck('lobSubcategory.title')->filter(),
+                                        ];
+                                    })
+                                    ->values()
+                                    ->toArray();
+                                return $data['supplierLobs'];
+                            })
+                            ->schema([
+                                TextEntry::make('lobCategory')
+                                    ->belowContent(fn ($state) => $state->description)
+                                    ->hiddenLabel()
+                                    ->formatStateUsing(fn ($state) => $state->title)
+                                    ->weight(FontWeight::Bold)
+                                    ->icon(Heroicon::OutlinedTag)
+                                    ->color('primary')
+                                    ->size(TextSize::Medium),
+                                TextEntry::make('lob_subcategories_list')
+                                    ->listWithLineBreaks()
+                                    ->bulleted()
+                                    ->badge()
+                                    ->hiddenLabel()
+                                    ->color('info'),
+                            ])
+                    ])
+                    ->collapsible(),
                 Section::make('Address Information')
                     ->description('Below is the address information for your business. You can add multiple addresses if needed.')
                     ->icon(Heroicon::Map)
@@ -79,6 +136,7 @@ class SupplierInfolist
                             ->columnSpan(2),
                         RepeatableEntry::make('addresses')
                             ->hiddenLabel()
+                            ->hidden(fn ($record) => count($record->addresses) === 0)
                             ->schema([
                                 Fieldset::make('Address Details')
                                     ->schema([

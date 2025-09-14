@@ -103,6 +103,9 @@ class AddressesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('line_1')
             ->description('This table displays the registered addresses of the selected supplier, including main office, branch, and other relevant locations. You may also add or edit addresses as needed.')
+            ->emptyStateHeading('No Addresses Found')
+            ->emptyStateDescription('Get started by creating a new address.')
+            ->emptyStateIcon(Heroicon::XCircle)
             ->columns([
                 TextColumn::make('line_1')
                     ->label('Address')

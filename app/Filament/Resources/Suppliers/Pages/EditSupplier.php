@@ -10,6 +10,7 @@ use Filament\Actions\RestoreAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Database\Eloquent\Model;
 
 class EditSupplier extends EditRecord
 {
@@ -40,5 +41,49 @@ class EditSupplier extends EditRecord
                 ->icon(Heroicon::OutlinedXMark)
                 ->label('Cancel'),
         ];
+    }
+
+    protected function handleRecordUpdate(Model $record, array $data): Model
+    {
+        $record->update($data);
+
+        // Save supplier LOBs
+        if (isset($data['supplierLobs'])) {
+            $record->supplierLobs()->delete(); // Remove existing LOBs
+            foreach ($data['supplierLobs'] as $lobData) {
+                if (isset($lobData['lob_subcategory_id'])) {
+                    foreach ($lobData['lob_subcategory_id'] as $subcategoryId) {
+                        $record->supplierLobs()->create([
+                            'supplier_id' => $record->id,
+                            'lob_category_id' => $lobData['lob_category_id'],
+                            'lob_subcategory_id' => $subcategoryId,
+                        ]);
+                    }
+                } else {
+                    $record->supplierLobs()->create([
+                        'supplier_id' => $record->id,
+                        'lob_category_id' => $lobData['lob_category_id'],
+                    ]);
+                }
+            }
+        }
+
+        return $record;
+    }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $data['supplierLobs'] = $this->record->supplierLobs()
+            ->get()
+            ->groupBy('lob_category_id')
+            ->map(function ($items, $categoryId) {
+                return [
+                    'lob_category_id' => $categoryId,
+                    'lob_subcategory_id' => $items->pluck('lob_subcategory_id')->toArray(),
+                ];
+            })
+            ->values()
+            ->toArray();
+        return $data;
     }
 }

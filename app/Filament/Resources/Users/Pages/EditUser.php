@@ -56,7 +56,10 @@ class EditUser extends EditRecord
                 ]);
                 break;
             case 'end-user':
-                $record->syncRoles(['staff']);
+                $record->endUser()->update([
+                    'office_id' => $data['endUser']['office_id'],
+                    'designation' => $data['endUser']['designation'],
+                ]);
                 break;
             default:
                 break;

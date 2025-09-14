@@ -20,6 +20,7 @@ class Supplier extends Model
         'email',
         'mobile_number',
         'landline_number',
+        'owner_name',
         'supplier_type',
     ];
 
@@ -37,5 +38,10 @@ class Supplier extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function supplierLobs(): HasMany
+    {
+        return $this->hasMany(SupplierLob::class);
     }
 }

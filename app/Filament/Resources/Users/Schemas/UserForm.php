@@ -52,6 +52,7 @@ class UserForm
                             ToggleButtons::make('status')
                                 ->label('Account Status')
                                 ->grouped()
+                                ->default('active')
                                 ->options([
                                     'active' => 'Active',
                                     'inactive' => 'Inactive'
@@ -103,7 +104,36 @@ class UserForm
                                         $component->state($record->twg->twg_type);
                                     }
                                 }),
-                        ])
+                        ]),
+                    Step::make('Other Information')
+                        ->columns(2)
+                        ->icon(Heroicon::InformationCircle)
+                        ->description('Provide additional information below')
+                        ->visible(function (Get $get) {
+                            return $get('role') ? $get('role')->value === UserRole::EndUser->value : false;
+                        })
+                        ->schema([
+                            Select::make('endUser.office_id')
+                                ->label('Office')
+                                ->native(false)
+                                ->searchable()
+                                ->required()
+                                ->options(Office::pluck('title', 'id'))
+                                ->preload()
+                                ->afterStateHydrated(function ($component, $state, $record) {
+                                    if ($record && $record->endUser) {
+                                        $component->state($record->endUser->office_id);
+                                    }
+                                }),
+                            TextInput::make('endUser.designation')
+                                ->label('Designation')
+                                ->required()
+                                ->afterStateHydrated(function ($component, $state, $record) {
+                                    if ($record && $record->endUser) {
+                                        $component->state($record->endUser->designation);
+                                    }
+                                })
+                        ]),
                 ])->columnSpanFull()
             ]);
     }
