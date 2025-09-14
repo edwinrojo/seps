@@ -47,9 +47,9 @@ class LOBCategoriesTable
                             ->label('Subcategories')
                             ->listWithLineBreaks()
                             ->bulleted()
-                            ->state(fn ($record) => $record->lob_subcategories->pluck('title')->toArray()),
+                            ->state(fn ($record) => $record->lobSubcategories->pluck('title')->toArray()),
                     ])
-                    ->visible(fn ($record) => $record->lob_subcategories->isNotEmpty())
+                    ->visible(fn ($record) => $record->lobSubcategories->isNotEmpty())
                     ->collapsible()
                     ->collapsed(false),
                 ])

@@ -19,7 +19,7 @@ use Filament\Tables\Table;
 
 class LobSubcategoriesRelationManager extends RelationManager
 {
-    protected static string $relationship = 'lob_subcategories';
+    protected static string $relationship = 'lobSubcategories';
 
     public function form(Schema $schema): Schema
     {

@@ -72,7 +72,7 @@ class SupplierForm
                     ->hiddenOn('create')
                     ->schema([
                         Repeater::make('supplierLobs')
-                            ->label('Line of Business (LOB)')
+                            ->hiddenLabel()
                             ->columns(2)
                             ->grid(2)
                             ->addActionAlignment(Alignment::Start)

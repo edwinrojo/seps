@@ -27,6 +27,9 @@ use Filament\Infolists\Components\RepeatableEntry;
 use App\Models\Province;
 use App\Models\Municipality;
 use App\Models\Barangay;
+use App\Models\LobCategory;
+use App\Models\LobSubcategory;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Filament\Schemas\Components\Utilities\Set;
@@ -64,21 +67,23 @@ class BusinessProfile extends Page
                 ->modal()
                 ->modalHeading('Manage Your Business Profile')
                 ->modalDescription('Update your business profile information.')
-                ->modalSubmitAction(fn (Action $action) => $action->label('Create Address')->icon(Heroicon::OutlinedPlusCircle))
+                ->modalSubmitAction(fn (Action $action) => $action->label('Save Changes')->icon(Heroicon::OutlinedPlusCircle))
                 ->modalCancelAction(fn (Action $action) => $action->label('Cancel')->icon(Heroicon::XMark))
                 ->fillForm(function (): array {
                     $supplier = $this->record;
                     return $supplier ? [
                         'business_name' => $supplier->business_name,
+                        'owner_name' => $supplier->owner_name,
                         'email' => $supplier->email,
                         'website' => $supplier->website,
                         'mobile_number' => $supplier->mobile_number,
                         'landline_number' => $supplier->landline_number,
                         'addresses' => $supplier->addresses,
                         'supplier_type' => $supplier->supplier_type,
+                        'supplierLobs' => $this->formatSupplierLobsBeforeFill($supplier->supplierLobs),
                     ] : [];
                 })
-                ->schema(array_merge($this->businessInformationSchema(), $this->addressSchema()))
+                ->schema(array_merge($this->businessInformationSchema(), $this->lineOfBusinessSchema(), $this->addressSchema()))
                 ->action(function (array $data): void {
                     $supplier = $this->record;
                     if ($supplier) {
@@ -86,6 +91,8 @@ class BusinessProfile extends Page
                     } else {
                         $supplier()->create($data);
                     }
+
+                    $this->saveSupplierLobs($supplier, $data);
 
                     $addresses = $data['addresses'] ?? [];
                     foreach ($addresses as $addressData) {
@@ -128,11 +135,13 @@ class BusinessProfile extends Page
                 $supplier = $this->record;
                 return $supplier ? [
                     'business_name' => $supplier->business_name,
+                    'owner_name' => $supplier->owner_name,
                     'email' => $supplier->email,
                     'website' => $supplier->website,
                     'mobile_number' => $supplier->mobile_number,
                     'landline_number' => $supplier->landline_number,
                     'addresses' => $supplier->addresses,
+                    'supplier_type' => $supplier->supplier_type,
                 ] : [];
             })
             ->schema($this->businessInformationSchema())
@@ -165,8 +174,11 @@ class BusinessProfile extends Page
                         ->label('Business Name')
                         ->placeholder('e.g., ABC Enterprises')
                         ->required()
-                        ->maxLength(255)
-                        ->columnSpan(2),
+                        ->maxLength(255),
+                    TextInput::make('owner_name')
+                        ->label('Name of Owner')
+                        ->required()
+                        ->placeholder('e.g., Juan Dela Cruz'),
                     TextInput::make('email')
                         ->email()
                         ->label('Email Address')
@@ -201,6 +213,102 @@ class BusinessProfile extends Page
                 ])
                 ->columns(2),
         ];
+    }
+
+    public function lineOfBusinessSchema(): array
+    {
+        return [
+            Section::make('Line of Business')
+                    ->description('Please provide the line of business details.')
+                    ->icon(Heroicon::Briefcase)
+                    ->schema([
+                        Repeater::make('supplierLobs')
+                            ->hiddenLabel()
+                            ->columns(2)
+                            ->grid(2)
+                            ->addActionAlignment(Alignment::Start)
+                            ->addActionLabel('Add Line of Business')
+                            ->addAction(fn ($action) => $action->icon(Heroicon::OutlinedPlusCircle))
+                            ->columnSpanFull()
+                            ->table([
+                                TableColumn::make('Category'),
+                                TableColumn::make('Subcategory'),
+                            ])
+                            ->schema([
+                                Select::make('lob_category_id')
+                                    ->label('Category')
+                                    ->options(fn () => LobCategory::pluck('title', 'id')->toArray())
+                                    ->required()
+                                    ->reactive()
+                                    ->afterStateUpdated(fn (callable $set) => $set('lob_subcategory_id', null))
+                                    ->searchable()
+                                    ->disableOptionsWhenSelectedInSiblingRepeaterItems()
+                                    ->placeholder('Select Category'),
+                                Select::make('lob_subcategory_id')
+                                    ->label('Subcategory')
+                                    ->multiple()
+                                    ->required()
+                                    ->searchable()
+                                    ->hidden(function (callable $get) {
+                                        $categoryId = $get('lob_category_id');
+                                        $subcategories = LobSubcategory::where('lob_category_id', $categoryId)
+                                            ->pluck('title', 'id')
+                                            ->toArray();
+                                        return $subcategories === [] || !$categoryId;
+                                    })
+                                    ->options(function (callable $get) {
+                                        $categoryId = $get('lob_category_id');
+                                        if (!$categoryId) {
+                                            return [];
+                                        }
+                                        return LobSubcategory::where('lob_category_id', $categoryId)
+                                            ->pluck('title', 'id')
+                                            ->toArray();
+                                    })
+                                    ->placeholder('Select Subcategory'),
+                            ]),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull(),
+        ];
+    }
+
+    protected function formatSupplierLobsBeforeFill($supplierLobs): array
+    {
+        $data = $supplierLobs
+            ->groupBy('lob_category_id')
+            ->map(function ($items, $categoryId) {
+                return [
+                    'lob_category_id' => $categoryId,
+                    'lob_subcategory_id' => $items->pluck('lob_subcategory_id')->toArray(),
+                ];
+            })
+            ->values()
+            ->toArray();
+        return $data;
+    }
+
+    protected function saveSupplierLobs($record, $data) {
+        // Save supplier LOBs
+        if (isset($data['supplierLobs'])) {
+            $record->supplierLobs()->delete(); // Remove existing LOBs
+            foreach ($data['supplierLobs'] as $lobData) {
+                if (isset($lobData['lob_subcategory_id'])) {
+                    foreach ($lobData['lob_subcategory_id'] as $subcategoryId) {
+                        $record->supplierLobs()->create([
+                            'supplier_id' => $record->id,
+                            'lob_category_id' => $lobData['lob_category_id'],
+                            'lob_subcategory_id' => $subcategoryId,
+                        ]);
+                    }
+                } else {
+                    $record->supplierLobs()->create([
+                        'supplier_id' => $record->id,
+                        'lob_category_id' => $lobData['lob_category_id'],
+                    ]);
+                }
+            }
+        }
     }
 
     public function addressSchema(): array
