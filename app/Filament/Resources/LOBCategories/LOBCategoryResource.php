@@ -19,7 +19,7 @@ class LOBCategoryResource extends Resource
 {
     protected static ?string $model = LOBCategory::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBriefcase;
 
     protected static ?string $recordTitleAttribute = 'title';
 

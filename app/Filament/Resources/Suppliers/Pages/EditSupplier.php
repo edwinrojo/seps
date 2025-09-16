@@ -19,27 +19,34 @@ class EditSupplier extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            ViewAction::make()
-                ->icon(Heroicon::OutlinedEye)
-                ->label('View Supplier'),
+            // ViewAction::make()
+            //     ->icon(Heroicon::OutlinedEye)
+            //     ->label('View Supplier'),
+            $this->getSaveFormAction()
+                ->formId('form')
+                ->icon(Heroicon::OutlinedCheckCircle)
+                ->label('Save Supplier'),
             SecureDeleteAction::make()
                 ->icon(Heroicon::OutlinedTrash),
             ForceDeleteAction::make()
                 ->icon(Heroicon::OutlinedTrash),
             RestoreAction::make()
                 ->icon(Heroicon::OutlinedArrowUturnLeft),
+            $this->getCancelFormAction()
+                ->icon(Heroicon::OutlinedXMark)
+                ->label('Cancel'),
         ];
     }
 
     protected function getFormActions(): array
     {
         return [
-            $this->getSaveFormAction()
-                ->icon(Heroicon::OutlinedCheckCircle)
-                ->label('Save Supplier'),
-            $this->getCancelFormAction()
-                ->icon(Heroicon::OutlinedXMark)
-                ->label('Cancel'),
+            // $this->getSaveFormAction()
+            //     ->icon(Heroicon::OutlinedCheckCircle)
+            //     ->label('Save Supplier'),
+            // $this->getCancelFormAction()
+            //     ->icon(Heroicon::OutlinedXMark)
+            //     ->label('Cancel'),
         ];
     }
 

@@ -8,7 +8,6 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\AvatarProviders\UiAvatarsProvider;
 use Filament\Facades\Filament;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Icons\Heroicon;
@@ -50,13 +49,19 @@ class UsersTable
                             ->orderBy('first_name', $direction);
                     })
                     ->weight(FontWeight::Bold)
-                    ->description(fn ($record) => $record->role->getLabel())
-                    ->searchable(),
-                TextColumn::make('supplier.business_name')
-                    ->icon(Heroicon::BuildingStorefront)
-                    ->label('Business Name')
-                    ->placeholder(function ($record) {
-                        return $record->role === 'supplier' ? 'Not available' : 'This user is not a supplier';
+                    ->description(function ($record, $livewire) {
+                        switch ($livewire->activeTab) {
+                            case 'suppliers':
+                                return $record->supplier?->business_name ?? 'No business profile';
+                            case 'twgs':
+                                return 'TWG for ' . $record->twg?->twg_type->getLabel();
+                            case 'end-users':
+                                return $record->endUser?->designation;
+                            case 'all':
+                                return $record->role->getLabel();
+                            default:
+                                return null;
+                        }
                     })
                     ->searchable(),
                 TextColumn::make('email')
@@ -66,6 +71,12 @@ class UsersTable
                         TextColumn::make('contact_number')->record($record)->icon(Heroicon::Phone)->table($table)->inline()->prefix('+63 '),
                     ])
                     ->listWithLineBreaks(),
+                TextColumn::make('endUser.office.acronym')
+                    ->label('Office')
+                    ->searchable()
+                    ->icon(Heroicon::BuildingLibrary)
+                    ->hidden(fn ($livewire) => $livewire->activeTab !== 'end-users')
+                    ->formatStateUsing(fn ($state) => $state ?? 'No office assigned'),
                 TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable(),

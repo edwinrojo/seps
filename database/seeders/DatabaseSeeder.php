@@ -100,6 +100,42 @@ class DatabaseSeeder extends Seeder
             'supplier_type' => 'goods',
         ]);
 
+        $supplier_user2 = User::create([
+            'id' => (string) Str::ulid(),
+            'first_name' => 'Michael',
+            'last_name' => 'Tan',
+            'middle_name' => 'Lee',
+            'suffix' => '',
+            'role' => 'supplier',
+            'email' => 'michael@local.dev',
+            'contact_number' => '946-565-2778',
+            'password' => bcrypt('1234'),
+        ]);
+
+        $supplier_user3 = User::create([
+            'id' => (string) Str::ulid(),
+            'first_name' => 'Sarah',
+            'last_name' => 'Lim',
+            'middle_name' => 'Chen',
+            'suffix' => '',
+            'role' => 'supplier',
+            'email' => 'sarah@local.dev',
+            'contact_number' => '946-565-2778',
+            'password' => bcrypt('1234'),
+        ]);
+
+        $supplier_user4 = User::create([
+            'id' => (string) Str::ulid(),
+            'first_name' => 'David',
+            'last_name' => 'Garcia',
+            'middle_name' => 'Martinez',
+            'suffix' => '',
+            'role' => 'supplier',
+            'email' => 'david@local.dev',
+            'contact_number' => '946-565-2778',
+            'password' => bcrypt('1234'),
+        ]);
+
         $lob_category1 = LobCategory::create([
             'title' => 'Information Technology',
             'description' => 'Category for IT-related products and services.',
