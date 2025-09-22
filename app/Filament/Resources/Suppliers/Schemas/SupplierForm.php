@@ -90,6 +90,15 @@ class SupplierForm
                                 Select::make('lob_category_id')
                                     ->label('Category')
                                     ->options(fn () => LobCategory::pluck('title', 'id')->toArray())
+                                    ->options(function () {
+                                        $lobCategories = LobCategory::all();
+                                        // add description to next line via HtmlString
+                                        return $lobCategories->pluck('title', 'id')->mapWithKeys(function ($title, $id) use ($lobCategories) {
+                                            $description = $lobCategories->where('id', $id)->first()->description;
+                                            return [$id => '<b>'.$title.'</b>' . ($description ? "<span style='display: block;' class='text-sm text-gray-500'>$description</span>" : '')];
+                                        });
+                                    })
+                                    ->allowHtml()
                                     ->required()
                                     ->reactive()
                                     ->afterStateUpdated(fn (callable $set) => $set('lob_subcategory_id', null))

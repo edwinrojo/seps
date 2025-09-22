@@ -23,6 +23,10 @@ class UsersTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->heading('User Registry')
+            ->description('This table provides a comprehensive list of all user accounts registered in the system, including their roles, contact information, and account status.')
+            ->deferLoading()
+            ->striped()
             ->modifyQueryUsing(function (Builder $query) {
                 $currentUserId = Filament::auth()->user()?->id;
                 if ($currentUserId) {

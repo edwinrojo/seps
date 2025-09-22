@@ -29,6 +29,8 @@ class LOBCategoriesTable
                     ->url(route('filament.admin.resources.l-o-b-categories.create'))
                     ->button(),
             ])
+            ->heading('Official Line of Business Categories')
+            ->description('List of all the official Line of Business (LOB) categories available in the system.')
             ->columns([
                 Stack::make([
                     TextColumn::make('title')

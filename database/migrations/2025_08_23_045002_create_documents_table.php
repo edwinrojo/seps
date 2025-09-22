@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('documents', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->foreignUlid('document_type_id')->constrained('document_types')->cascadeOnDelete();
-            $table->string('title');
+            $table->string('title')->unique();
             $table->text('description')->nullable();
             $table->string('procurement_type');
             $table->boolean('is_required')->default(false);

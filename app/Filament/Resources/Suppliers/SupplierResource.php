@@ -9,13 +9,16 @@ use App\Filament\Resources\Suppliers\Pages\ViewSupplier;
 use App\Filament\Resources\Suppliers\Schemas\SupplierForm;
 use App\Filament\Resources\Suppliers\Schemas\SupplierInfolist;
 use App\Filament\Resources\Suppliers\Tables\SuppliersTable;
+use App\Models\Address;
 use App\Models\Supplier;
 use BackedEnum;
+use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class SupplierResource extends Resource
@@ -44,7 +47,13 @@ class SupplierResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\AddressesRelationManager::class,
+            RelationGroup::make('Relations', [
+                RelationManagers\AddressesRelationManager::class,
+                RelationManagers\AttachmentsRelationManager::class,
+            ]),
+            // RelationGroup::make('Attachments', [
+            //     RelationManagers\AttachmentsRelationManager::class,
+            // ]),
         ];
     }
 

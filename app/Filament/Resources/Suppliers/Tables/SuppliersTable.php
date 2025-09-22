@@ -60,7 +60,7 @@ class SuppliersTable
                         TextColumn::make('mobile_number')->record($record)->prefix('+63 ')->icon(Heroicon::DevicePhoneMobile)->table($table)->inline(),
                         TextColumn::make('landline_number')->record($record)->icon(Heroicon::Phone)->table($table)->inline(),
                     ])
-                    ->listWithLineBreaks(),
+                    ->listWithLineBreaks()
             ])
             ->filters([
                 TrashedFilter::make(),

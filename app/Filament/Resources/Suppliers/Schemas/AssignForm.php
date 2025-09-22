@@ -20,6 +20,15 @@ class AssignForm
                 ->prefixIcon(Heroicon::User)
                 ->preload()
                 ->options(fn ($record) => User::doesntHave('supplier')->where('role', 'supplier')->orWhere('id', $record->user_id)->pluck('name', 'id'))
+                ->options(function ($record) {
+                        $users = User::doesntHave('supplier')->where('role', 'supplier')->orWhere('id', $record->user_id)->get();
+                        // add description to next line via HtmlString
+                        return $users->pluck('name', 'id')->mapWithKeys(function ($name, $id) use ($users) {
+                            $email = $users->where('id', $id)->first()->email;
+                            return [$id => '<b>'.$name.'</b>' . ($email ? "<span style='display: block;' class='text-sm text-gray-500'>$email</span>" : '')];
+                        });
+                    })
+                ->allowHtml()
                 ->afterLabel('Options are limited to supplier-role accounts.')
                 ->required(),
         ];

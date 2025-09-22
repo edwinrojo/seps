@@ -89,7 +89,7 @@ class EditProfile extends BaseEditProfile
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $user = request()->user();
-        if (!isset($data['avatar']) || ($data['avatar'] != $user->avatar && $user->avatar != null)) {
+        if (!isset($data['avatar']) && ($data['avatar'] != $user->avatar && $user->avatar != null)) {
             Storage::disk('public')->delete($user->avatar);
         }
 

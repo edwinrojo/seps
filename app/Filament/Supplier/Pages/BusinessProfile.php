@@ -9,30 +9,21 @@ use BackedEnum;
 use Filament\Support\Icons\Heroicon;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\FileUpload;
 use Filament\Support\Enums\Width;
 use Filament\Schemas\Components\Section;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Support\Enums\TextSize;
-use Filament\Support\Enums\FontWeight;
 use Filament\Forms\Components\Repeater;
 use Filament\Support\Enums\Alignment;
 use App\Models\Supplier;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use Filament\Infolists\Components\ImageEntry;
-use Filament\Infolists\Components\RepeatableEntry;
 use App\Models\Province;
 use App\Models\Municipality;
 use App\Models\Barangay;
 use App\Models\LobCategory;
 use App\Models\LobSubcategory;
 use Filament\Forms\Components\Repeater\TableColumn;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
-use Illuminate\Support\Facades\Storage;
-use Filament\Schemas\Components\Utilities\Set;
 
 class BusinessProfile extends Page
 {
@@ -116,6 +107,7 @@ class BusinessProfile extends Page
                 ->slideOver()
                 ->stickyModalHeader()
                 ->stickyModalFooter()
+                ->modalIcon(Heroicon::PencilSquare)
                 ->icon(Heroicon::PencilSquare)
                 ->modalWidth(Width::FiveExtraLarge)
                 ->closeModalByClickingAway(false)
