@@ -17,6 +17,7 @@ use Filament\Actions\DissociateAction;
 use Filament\Actions\DissociateBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
@@ -26,6 +27,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class AddressesRelationManager extends RelationManager
 {
@@ -74,7 +76,7 @@ class AddressesRelationManager extends RelationManager
                     ->label('ZIP Code')
                     ->placeholder('e.g., 8000')
                     ->required()
-                    ->maxLength(10),
+                    ->maxLength(10)
             ]);
     }
 

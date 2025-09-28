@@ -3,6 +3,7 @@
 namespace App\Filament\Supplier\Pages;
 
 use App\Enums\ProcType;
+use App\Filament\Resources\Suppliers\Actions\SiteImageAction;
 use App\Filament\Resources\Suppliers\Schemas\SupplierInfolist;
 use Filament\Pages\Page;
 use BackedEnum;
@@ -23,7 +24,9 @@ use App\Models\Municipality;
 use App\Models\Barangay;
 use App\Models\LobCategory;
 use App\Models\LobSubcategory;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater\TableColumn;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class BusinessProfile extends Page
 {
@@ -69,7 +72,7 @@ class BusinessProfile extends Page
                         'website' => $supplier->website,
                         'mobile_number' => $supplier->mobile_number,
                         'landline_number' => $supplier->landline_number,
-                        'addresses' => $supplier->addresses,
+                        'addresses' => $supplier->addresses()->with('site_image')->get(),
                         'supplier_type' => $supplier->supplier_type,
                         'supplierLobs' => $this->formatSupplierLobsBeforeFill($supplier->supplierLobs),
                     ] : [];
@@ -91,10 +94,12 @@ class BusinessProfile extends Page
                             $address = $supplier->addresses()->find($addressData['id']);
                             if ($address) {
                                 $address->update($addressData);
+                                SiteImageAction::save($address, $addressData['site_image']['file_path']);
                                 continue;
                             }
                         }
                         $supplier->addresses()->create($addressData);
+                        SiteImageAction::save($address, $addressData['site_image']['file_path']);
                     }
 
                     Notification::make()
@@ -211,57 +216,57 @@ class BusinessProfile extends Page
     {
         return [
             Section::make('Line of Business')
-                    ->description('Please provide the line of business details.')
-                    ->icon(Heroicon::Briefcase)
-                    ->schema([
-                        Repeater::make('supplierLobs')
-                            ->hiddenLabel()
-                            ->columns(2)
-                            ->grid(2)
-                            ->addActionAlignment(Alignment::Start)
-                            ->addActionLabel('Add Line of Business')
-                            ->addAction(fn ($action) => $action->icon(Heroicon::OutlinedPlusCircle))
-                            ->columnSpanFull()
-                            ->table([
-                                TableColumn::make('Category'),
-                                TableColumn::make('Subcategory'),
-                            ])
-                            ->schema([
-                                Select::make('lob_category_id')
-                                    ->label('Category')
-                                    ->options(fn () => LobCategory::pluck('title', 'id')->toArray())
-                                    ->required()
-                                    ->reactive()
-                                    ->afterStateUpdated(fn (callable $set) => $set('lob_subcategory_id', null))
-                                    ->searchable()
-                                    ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                                    ->placeholder('Select Category'),
-                                Select::make('lob_subcategory_id')
-                                    ->label('Subcategory')
-                                    ->multiple()
-                                    ->required()
-                                    ->searchable()
-                                    ->hidden(function (callable $get) {
-                                        $categoryId = $get('lob_category_id');
-                                        $subcategories = LobSubcategory::where('lob_category_id', $categoryId)
-                                            ->pluck('title', 'id')
-                                            ->toArray();
-                                        return $subcategories === [] || !$categoryId;
-                                    })
-                                    ->options(function (callable $get) {
-                                        $categoryId = $get('lob_category_id');
-                                        if (!$categoryId) {
-                                            return [];
-                                        }
-                                        return LobSubcategory::where('lob_category_id', $categoryId)
-                                            ->pluck('title', 'id')
-                                            ->toArray();
-                                    })
-                                    ->placeholder('Select Subcategory'),
-                            ]),
-                    ])
-                    ->columns(2)
-                    ->columnSpanFull(),
+                ->description('Please provide the line of business details.')
+                ->icon(Heroicon::Briefcase)
+                ->schema([
+                    Repeater::make('supplierLobs')
+                        ->hiddenLabel()
+                        ->columns(2)
+                        ->grid(2)
+                        ->addActionAlignment(Alignment::Start)
+                        ->addActionLabel('Add Line of Business')
+                        ->addAction(fn ($action) => $action->icon(Heroicon::OutlinedPlusCircle))
+                        ->columnSpanFull()
+                        ->table([
+                            TableColumn::make('Category'),
+                            TableColumn::make('Subcategory'),
+                        ])
+                        ->schema([
+                            Select::make('lob_category_id')
+                                ->label('Category')
+                                ->options(fn () => LobCategory::pluck('title', 'id')->toArray())
+                                ->required()
+                                ->reactive()
+                                ->afterStateUpdated(fn (callable $set) => $set('lob_subcategory_id', null))
+                                ->searchable()
+                                ->disableOptionsWhenSelectedInSiblingRepeaterItems()
+                                ->placeholder('Select Category'),
+                            Select::make('lob_subcategory_id')
+                                ->label('Subcategory')
+                                ->multiple()
+                                ->required()
+                                ->searchable()
+                                ->hidden(function (callable $get) {
+                                    $categoryId = $get('lob_category_id');
+                                    $subcategories = LobSubcategory::where('lob_category_id', $categoryId)
+                                        ->pluck('title', 'id')
+                                        ->toArray();
+                                    return $subcategories === [] || !$categoryId;
+                                })
+                                ->options(function (callable $get) {
+                                    $categoryId = $get('lob_category_id');
+                                    if (!$categoryId) {
+                                        return [];
+                                    }
+                                    return LobSubcategory::where('lob_category_id', $categoryId)
+                                        ->pluck('title', 'id')
+                                        ->toArray();
+                                })
+                                ->placeholder('Select Subcategory'),
+                        ]),
+                ])
+                ->columns(2)
+                ->columnSpanFull(),
         ];
     }
 
@@ -354,6 +359,20 @@ class BusinessProfile extends Page
                                 ->placeholder('e.g., 8000')
                                 ->required()
                                 ->maxLength(10),
+                            FileUpload::make('site_image.file_path')
+                                ->disk('public')
+                                ->label('Site Image')
+                                ->imageEditor()
+                                ->image()
+                                ->getUploadedFileNameForStorageUsing(
+                                    fn (TemporaryUploadedFile $file): string => (string) str($file->getClientOriginalName())
+                                        ->prepend((string) now()->format('YmdHis') . '_')
+                                )
+                                ->directory('site_images')
+                                ->maxSize(2048)
+                                ->moveFiles()
+                                ->required()
+                                ->imagePreviewHeight('200'),
                         ])
                         ->collapsed()
                         ->columns(2)

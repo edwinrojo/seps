@@ -2,7 +2,11 @@
 
 namespace App\Filament\Resources\Suppliers\RelationManagers;
 
+use App\Enums\Status;
+use App\Filament\Resources\Suppliers\Schemas\SupplierDocumentsColumns;
+use App\Models\Attachment;
 use App\Models\Document;
+use App\Models\Supplier;
 use Asmit\FilamentUpload\Enums\PdfViewFit;
 use Asmit\FilamentUpload\Forms\Components\AdvancedFileUpload;
 use Filament\Actions\Action;
@@ -37,9 +41,7 @@ class AttachmentsRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                TextInput::make('document.title')
-                    ->required()
-                    ->maxLength(255),
+
             ]);
     }
 
@@ -55,14 +57,7 @@ class AttachmentsRelationManager extends RelationManager
                 $procurement_type = $this->getOwnerRecord()->supplier_type->value;
                 return Document::where('procurement_type', 'LIKE', '%' . $procurement_type . '%');
             })
-            ->columns([
-                TextColumn::make('title')
-                    ->color('primary')
-                    ->weight('bold')
-                    ->tooltip(fn (Document $record): string => $record->description)
-                    ->description(fn (Document $record): string => substr($record->description, 0, 70) . (strlen($record->description) > 70 ? '...' : ''))
-                    ->searchable()
-            ])
+            ->columns(SupplierDocumentsColumns::get($this->getOwnerRecord()))
             ->filters([
                 //
             ])
@@ -155,6 +150,17 @@ class AttachmentsRelationManager extends RelationManager
                                 'file_size' => $data['file_size'],
                             ]);
                         }
+
+                        // Create a status record
+                        $attachment = $supplier->attachments()->where('document_id', $record->id)->first();
+                        $attachment->statuses()->create([
+                            'user_id' => request()->user()->id,
+                            'status' => Status::PendingReview,
+                            'statusable_type' => Attachment::class,
+                            'statusable_id' => $attachment->id,
+                            'remarks' => 'New document attached on ' . now()->format('F d, Y') . ' with file name "' . basename($data['file_path']) . '" is pending review.',
+                            'status_date' => now(),
+                        ]);
 
                         Notification::make()
                             ->title('Document attached successfully')
