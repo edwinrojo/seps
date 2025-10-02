@@ -2,10 +2,13 @@
 
 namespace App\Filament\Resources\Suppliers\Schemas;
 
+use App\Helpers\DateColor;
 use App\Models\Attachment;
 use App\Models\Document;
 use App\Models\Status;
+use Carbon\Carbon;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Support\HtmlString;
 
 class SupplierDocumentsColumns
 {
@@ -23,28 +26,22 @@ class SupplierDocumentsColumns
                 ->badge()
                 ->color(function (Document $record) use ($supplier) {
                     $attachment = $supplier->attachments()->where('document_id', $record->id)->first();
-                    if (!$attachment || !$attachment->validity_date) {
-                        return 'gray';
-                    }
-                    $validity = \Carbon\Carbon::parse($attachment->validity_date);
-                    if ($validity->isPast()) {
-                        return 'danger';
-                    } elseif ($validity->isToday() || $validity->isTomorrow() || $validity->isNextWeek()) {
-                        return 'warning';
-                    } else {
-                        return 'success';
-                    }
+                    return DateColor::getColor($attachment?->validity_date);
                 })
                 ->label('Valid Until')
                 ->date('F d, Y'),
             TextColumn::make('status')
                 ->state(function (Document $record) use ($supplier) {
                     $attachment = $supplier->attachments()->where('document_id', $record->id)->first();
-                    $latest_status = Status::where('statusable_type', Attachment::class)
+                    return Status::where('statusable_type', Attachment::class)
                         ->where('statusable_id', $attachment?->id)
                         ->latest()
                         ->first();
-                    return $latest_status ? $latest_status->status->getLabel() : null;
+                })
+                ->html()
+                ->formatStateUsing(function ($state): HtmlString {
+                    $formatted_datetime = $state?->status_date ? Carbon::parse($state->status_date)->format('F d, Y h:i A') : '';
+                    return new HtmlString($state ? $state->status->getLabel() . '<br>' . $formatted_datetime : null);
                 })
                 ->tooltip(function (Document $record) use ($supplier) {
                     $attachment = $supplier->attachments()->where('document_id', $record->id)->first();
@@ -55,15 +52,7 @@ class SupplierDocumentsColumns
                     return $latest_status ? $latest_status->remarks : 'No status available';
                 })
                 ->badge()
-                ->color(function ($state) {
-                    return match ($state) {
-                        'Approved' => 'success',
-                        'Pending Review' => 'warning',
-                        'Rejected' => 'danger',
-                        default => 'secondary',
-                    };
-                })
-
+                ->color(fn ($state) => $state->status->getColor())
         ];
     }
 }

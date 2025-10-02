@@ -12,6 +12,7 @@ class Attachment extends Model
     use HasUlids;
 
     protected $fillable = [
+        'supplier_id',
         'document_id',
         'file_path',
         'validity_date',
