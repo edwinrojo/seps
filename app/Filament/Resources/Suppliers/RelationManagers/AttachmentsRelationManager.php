@@ -153,12 +153,17 @@ class AttachmentsRelationManager extends RelationManager
 
                         // Create a status record
                         $attachment = $supplier->attachments()->where('document_id', $record->id)->first();
+                        $remarks = match (request()->user()->role->value) {
+                            'administrator' => 'uploaded and validated by an administrator',
+                            'supplier' => 'uploaded for review',
+                            default => 'updated',
+                        };
                         $attachment->statuses()->create([
                             'user_id' => request()->user()->id,
-                            'status' => Status::PendingReview,
+                            'status' => request()->user()->role->value === 'administrator' ? Status::Validated : Status::PendingReview,
                             'statusable_type' => Attachment::class,
                             'statusable_id' => $attachment->id,
-                            'remarks' => 'New document attached on ' . now()->format('F d, Y') . ' with file name "' . basename($data['file_path']) . '" is pending review.',
+                            'remarks' => '<p>New document attached on ' . now()->format('F d, Y') . ' with file name "' . basename($data['file_path']) . '" is ' . $remarks . '.</p>',
                             'status_date' => now(),
                         ]);
 

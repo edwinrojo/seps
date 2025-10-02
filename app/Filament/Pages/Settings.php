@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Enums\UserRole;
 use App\Livewire\ListDocumentType;
+use App\Livewire\ListOffice;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Livewire;
@@ -16,7 +17,7 @@ class Settings extends Page
 {
     protected string $view = 'filament.pages.settings';
 
-    protected static ?string $title = 'System Settings';
+    protected static ?string $title = 'Other Settings';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
@@ -38,6 +39,11 @@ class Settings extends Page
                             ->schema([
                                 Livewire::make(ListDocumentType::class)->key('list-document-type'),
                             ]),
+                        Tab::make('offices')->label('Offices')
+                            ->icon(Heroicon::OutlinedBuildingOffice2)
+                            ->schema([
+                                Livewire::make(ListOffice::class)->key('list-office'),
+                            ])
                     ])
             ]);
     }
