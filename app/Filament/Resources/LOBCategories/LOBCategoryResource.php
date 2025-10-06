@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\LOBCategories;
 
+use App\Enums\NavigationGroup;
 use App\Filament\Resources\LOBCategories\Pages\CreateLOBCategory;
 use App\Filament\Resources\LOBCategories\Pages\EditLOBCategory;
 use App\Filament\Resources\LOBCategories\Pages\ListLOBCategories;
@@ -14,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class LOBCategoryResource extends Resource
 {
@@ -21,11 +23,15 @@ class LOBCategoryResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBriefcase;
 
+    protected static string | UnitEnum | null $navigationGroup = NavigationGroup::Administration;
+
     protected static ?string $recordTitleAttribute = 'title';
 
     protected static ?string $navigationLabel = 'Line of Business';
 
     protected static ?string $modelLabel = 'Line of Business Category';
+
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {

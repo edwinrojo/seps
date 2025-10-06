@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SiteValidations;
 
+use App\Enums\NavigationGroup;
 use App\Filament\Resources\SiteValidations\Pages\CreateSiteValidation;
 use App\Filament\Resources\SiteValidations\Pages\EditSiteValidation;
 use App\Filament\Resources\SiteValidations\Pages\ListSiteValidations;
@@ -15,6 +16,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class SiteValidationResource extends Resource
 {
@@ -22,7 +24,11 @@ class SiteValidationResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRocketLaunch;
 
+    protected static string | UnitEnum | null $navigationGroup = NavigationGroup::Suppliers;
+
     protected static ?string $recordTitleAttribute = 'purpose';
+
+    protected static ?int $navigationSort = 3;
 
     public static function form(Schema $schema): Schema
     {
@@ -51,7 +57,6 @@ class SiteValidationResource extends Resource
         return [
             'index' => ListSiteValidations::route('/'),
             'create' => CreateSiteValidation::route('/create'),
-            'view' => ViewSiteValidation::route('/{record}'),
             'edit' => EditSiteValidation::route('/{record}/edit'),
         ];
     }

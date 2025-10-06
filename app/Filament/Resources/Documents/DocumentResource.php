@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Documents;
 
+use App\Enums\NavigationGroup;
 use App\Filament\Resources\Documents\Pages\CreateDocument;
 use App\Filament\Resources\Documents\Pages\EditDocument;
 use App\Filament\Resources\Documents\Pages\ListDocuments;
@@ -13,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class DocumentResource extends Resource
 {
@@ -20,7 +22,11 @@ class DocumentResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
 
+    protected static string | UnitEnum | null $navigationGroup = NavigationGroup::Administration;
+
     protected static ?string $recordTitleAttribute = 'title';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema
     {

@@ -90,7 +90,7 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('1234'),
         ]);
 
-        $supplier_user->supplier()->create([
+        $supplier = $supplier_user->supplier()->create([
             'business_name' => 'Wincy Pharmacy Incorporated',
             'owner_name' => 'Joyce Gonida Rojo',
             'email' => 'contact@wincypharmacy.com',

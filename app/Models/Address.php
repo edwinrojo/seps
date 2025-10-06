@@ -23,6 +23,21 @@ class Address extends Model
         'zip_code'
     ];
 
+    public function getFullAddressAttribute(): string
+    {
+        $parts = array_filter([
+            $this->line_1,
+            $this->line_2,
+            optional($this->barangay)->name,
+            optional($this->municipality)->name,
+            optional($this->province)->name,
+            $this->country,
+            $this->zip_code,
+        ]);
+
+        return implode(', ', $parts);
+    }
+
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class);

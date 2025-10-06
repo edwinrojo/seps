@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Suppliers\Pages;
 
-use App\Filament\Actions\SecureDeleteAction;
+use App\Filament\GlobalActions\SecureDeleteAction;
 use App\Filament\Resources\Suppliers\SupplierResource;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;

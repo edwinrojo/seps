@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Attachments;
 
+use App\Enums\NavigationGroup;
 use App\Filament\Resources\Attachments\Pages\CreateAttachment;
 use App\Filament\Resources\Attachments\Pages\EditAttachment;
 use App\Filament\Resources\Attachments\Pages\ListAttachments;
@@ -13,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class AttachmentResource extends Resource
 {
@@ -20,11 +22,15 @@ class AttachmentResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPaperClip;
 
+    protected static string | UnitEnum | null $navigationGroup = NavigationGroup::Suppliers;
+
     protected static ?string $navigationLabel = 'Supplier Attachments';
 
     protected static ?string $recordTitleAttribute = 'document.title';
 
     protected $listeners = ['refreshAttachmentResource' => '$refresh'];
+
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {

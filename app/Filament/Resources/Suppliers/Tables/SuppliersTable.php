@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Suppliers\Tables;
 
-use App\Filament\Actions\SecureDeleteAction;
+use App\Filament\GlobalActions\SecureDeleteAction;
 use App\Filament\Resources\Suppliers\Schemas\AssignForm;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;

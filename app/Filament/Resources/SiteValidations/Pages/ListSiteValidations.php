@@ -5,6 +5,7 @@ namespace App\Filament\Resources\SiteValidations\Pages;
 use App\Filament\Resources\SiteValidations\SiteValidationResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Icons\Heroicon;
 
 class ListSiteValidations extends ListRecords
 {
@@ -13,7 +14,9 @@ class ListSiteValidations extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->label('Create Record')
+                ->icon(Heroicon::OutlinedPlus)
         ];
     }
 }

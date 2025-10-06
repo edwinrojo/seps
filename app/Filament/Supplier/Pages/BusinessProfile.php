@@ -3,7 +3,7 @@
 namespace App\Filament\Supplier\Pages;
 
 use App\Enums\ProcType;
-use App\Filament\Resources\Suppliers\Actions\SiteImageAction;
+use App\Filament\GlobalActions\SiteImageAction;
 use App\Filament\Resources\Suppliers\Schemas\SupplierInfolist;
 use Filament\Pages\Page;
 use BackedEnum;
@@ -331,6 +331,7 @@ class BusinessProfile extends Page
                                 ->maxLength(255)
                                 ->columnSpan(2),
                             Select::make('province_id')
+                                ->label('Province')
                                 ->searchable()
                                 ->required()
                                 ->options(fn () => Province::pluck('name', 'id')->toArray())

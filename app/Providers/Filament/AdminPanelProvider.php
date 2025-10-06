@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Enums\NavigationGroup;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -65,8 +66,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationItems([
                 NavigationItem::make('Profile')
+                    ->group(NavigationGroup::Accounts)
                     ->icon(Heroicon::OutlinedUser)
-                    ->label('User Profile')
+                    ->label('Profile')
                     ->url('/admin/profile')
                     ->isActiveWhen(fn () => request()->routeIs('filament.admin.auth.profile')),
             ])

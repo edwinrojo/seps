@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Enums\NavigationGroup;
 use App\Enums\UserRole;
 use App\Livewire\ListDocumentType;
 use App\Livewire\ListOffice;
@@ -12,6 +13,7 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Support\Icons\Heroicon;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Schema;
+use UnitEnum;
 
 class Settings extends Page
 {
@@ -20,6 +22,10 @@ class Settings extends Page
     protected static ?string $title = 'Other Settings';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
+
+    protected static string | UnitEnum | null $navigationGroup = NavigationGroup::Administration;
+
+    protected static ?int $navigationSort = 3;
 
     public static function canAccess(): bool
     {

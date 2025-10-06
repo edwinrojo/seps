@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Actions;
+namespace App\Filament\GlobalActions;
 
 use Closure;
 use Dotenv\Exception\ValidationException;

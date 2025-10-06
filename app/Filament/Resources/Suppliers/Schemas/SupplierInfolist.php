@@ -148,18 +148,7 @@ class SupplierInfolist
                             ->schema([
                                 TextEntry::make('line_1')
                                     ->hiddenLabel()
-                                    ->formatStateUsing(function ($state, $record) {
-                                        $parts = [$state];
-                                        if (!empty($record->line_2)) {
-                                            $parts[] = $record->line_2;
-                                        }
-                                        $parts[] = $record->barangay->name;
-                                        $parts[] = $record->municipality->name;
-                                        $parts[] = $record->province->name;
-                                        $parts[] = $record->zip_code;
-                                        $parts[] = $record->country;
-                                        return implode(', ', $parts);
-                                    })
+                                    ->formatStateUsing(fn ($state, $record) => $record->getFullAddressAttribute())
                                     ->icon(Heroicon::MapPin)
                                     // ->size(TextSize::Large)
                                     ->weight(FontWeight::Bold)

@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Documents\Pages;
 
-use App\Filament\Actions\SecureDeleteAction;
+use App\Filament\GlobalActions\SecureDeleteAction;
 use App\Filament\Resources\Documents\DocumentResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;

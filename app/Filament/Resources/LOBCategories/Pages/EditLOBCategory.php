@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\LOBCategories\Pages;
 
-use App\Filament\Actions\SecureDeleteAction;
+use App\Filament\GlobalActions\SecureDeleteAction;
 use App\Filament\Resources\LOBCategories\LOBCategoryResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;

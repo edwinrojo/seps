@@ -2,8 +2,12 @@
 
 namespace App\Filament\Resources\SiteValidations\Schemas;
 
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 
 class SiteValidationInfolist
 {
@@ -11,22 +15,53 @@ class SiteValidationInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('id')
-                    ->label('ID'),
-                TextEntry::make('supplier_id'),
-                TextEntry::make('address_id'),
-                TextEntry::make('twg_id'),
-                TextEntry::make('validation_date')
-                    ->dateTime(),
-                TextEntry::make('remarks')
-                    ->placeholder('-')
-                    ->columnSpanFull(),
-                TextEntry::make('created_at')
-                    ->dateTime()
-                    ->placeholder('-'),
-                TextEntry::make('updated_at')
-                    ->dateTime()
-                    ->placeholder('-'),
+                Section::make('Validation Information')
+                    ->description('Detailed information about the site validation.')
+                    ->icon(Heroicon::Map)
+                    ->columnSpanFull()
+                    ->inlineLabel()
+                    ->schema([
+                        TextEntry::make('supplier.business_name')
+                            ->icon(Heroicon::BuildingOffice2)
+                            ->label('Supplier')
+                            ->color('primary')
+                            ->weight('bold'),
+                        TextEntry::make('address.full_address')
+                            ->icon(Heroicon::MapPin)
+                            ->label('Address')
+                            ->color('gray')
+                            ->weight('bold'),
+                        TextEntry::make('validation_date')
+                            ->icon(Heroicon::CalendarDays)
+                            ->label('Validation Date')
+                            ->dateTime('F d, Y h:i A'),
+                        TextEntry::make('purpose')
+                            ->label('Purpose'),
+                        TextEntry::make('remarks')
+                            ->label('Remarks'),
+                        TextEntry::make('twg.user.name')
+                            ->icon(Heroicon::User)
+                            ->color('info')
+                            ->weight('bold')
+                            ->label('Validated By'),
+                    ]),
+                Section::make('Site Images')
+                    ->description('Images captured during the site validation.')
+                    ->icon(Heroicon::Photo)
+                    ->columnSpanFull()
+                    ->schema([
+                        RepeatableEntry::make('site_images')
+                            ->hiddenLabel()
+                            ->contained(false)
+                            ->grid(2)
+                            ->schema([
+                                ImageEntry::make('file_path')
+                                    ->imageWidth('100%')
+                                    ->imageHeight('auto')
+                                    ->hiddenLabel()
+                                    ->disk('public'),
+                            ]),
+                    ]),
             ]);
     }
 }

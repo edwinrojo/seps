@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Suppliers\RelationManagers;
 
-use App\Filament\Actions\SecureDeleteAction;
+use App\Filament\GlobalActions\SecureDeleteAction;
 use App\Filament\Resources\Suppliers\Schemas\SupplierInfolist;
 use App\Models\Barangay;
 use App\Models\Municipality;
@@ -49,6 +49,7 @@ class AddressesRelationManager extends RelationManager
                     ->maxLength(255)
                     ->columnSpan(2),
                 Select::make('province_id')
+                    ->label('Province')
                     ->searchable()
                     ->required()
                     ->options(fn () => Province::pluck('name', 'id')->toArray())
@@ -111,18 +112,7 @@ class AddressesRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('line_1')
                     ->label('Address')
-                    ->formatStateUsing(function ($state, $record) {
-                        $parts = [$state];
-                        if (!empty($record->line_2)) {
-                            $parts[] = $record->line_2;
-                        }
-                        $parts[] = $record->barangay->name;
-                        $parts[] = $record->municipality->name;
-                        $parts[] = $record->province->name;
-                        $parts[] = $record->zip_code;
-                        $parts[] = $record->country;
-                        return implode(', ', $parts);
-                    })
+                    ->formatStateUsing(fn ($record) => $record->getFullAddressAttribute())
                     ->searchable(),
             ])
             ->filters([

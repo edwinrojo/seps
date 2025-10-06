@@ -4,7 +4,7 @@ namespace App\Filament\Resources\Users\Pages;
 
 use App\Enums\ProcType;
 use App\Enums\UserRole;
-use App\Filament\Actions\SecureDeleteAction;
+use App\Filament\GlobalActions\SecureDeleteAction;
 use App\Filament\Resources\Users\Schemas\UserWizard;
 use App\Filament\Resources\Users\UserResource;
 use App\Models\Office;
