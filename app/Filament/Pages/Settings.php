@@ -6,6 +6,7 @@ use App\Enums\NavigationGroup;
 use App\Enums\UserRole;
 use App\Livewire\ListDocumentType;
 use App\Livewire\ListOffice;
+use App\Livewire\ListValidationPurpose;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Livewire;
@@ -49,7 +50,12 @@ class Settings extends Page
                             ->icon(Heroicon::OutlinedBuildingOffice2)
                             ->schema([
                                 Livewire::make(ListOffice::class)->key('list-office'),
-                            ])
+                            ]),
+                        Tab::make('validation-purposes')->label('Validation Purposes')
+                            ->icon(Heroicon::OutlinedCheckBadge)
+                            ->schema([
+                                Livewire::make(ListValidationPurpose::class)->key('list-validation-purpose'),
+                            ]),
                     ])
             ]);
     }

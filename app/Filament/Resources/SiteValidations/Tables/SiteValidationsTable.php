@@ -30,6 +30,9 @@ class SiteValidationsTable
                 TextColumn::make('twg.user.name')
                     ->label('TWG Member')
                     ->searchable(),
+                TextColumn::make('validation_purpose.purpose')
+                    ->label('Purpose')
+                    ->searchable(),
                 TextColumn::make('validation_date')
                     ->badge()
                     ->dateTime('F d, Y h:i A')

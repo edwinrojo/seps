@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Suppliers\RelationManagers;
 
 use App\Enums\Status;
+use App\Filament\Resources\Suppliers\Actions\AttachDocument;
 use App\Filament\Resources\Suppliers\Schemas\SupplierDocumentsColumns;
 use App\Models\Attachment;
 use App\Models\Document;
@@ -81,7 +82,7 @@ class AttachmentsRelationManager extends RelationManager
                         return $attachment ? '/' . $attachment->file_path : null;
                     }),
                 Action::make('attach')
-                    ->label('Attach/Replce Document')
+                    ->label('Attach/Replace Document')
                     ->modal()
                     ->modalWidth(Width::SevenExtraLarge)
                     ->modalHeading(fn (Document $record): string => "Attach " . $record->title)
@@ -104,6 +105,7 @@ class AttachmentsRelationManager extends RelationManager
                                             $set('file_size', $state->getSize());
                                         }
                                     })
+                                    ->required()
                                     ->columnSpan(2)
                                     ->acceptedFileTypes(['application/pdf'])
                                     ->directory('attachments')
@@ -112,7 +114,11 @@ class AttachmentsRelationManager extends RelationManager
                                     ->openable()
                                     ->downloadable()
                                     ->moveFiles()
-                                    ->maxSize(5120) // 5MB
+                                    ->minSize(1)
+                                    ->maxSize(5120)
+                                    ->validationMessages([
+                                        'max' => 'File size must not exceed 5MB.'
+                                    ])
                                     ->pdfDisplayPage(1)
                                     ->pdfToolbar(true)
                                     ->pdfZoomLevel(150)
@@ -120,58 +126,16 @@ class AttachmentsRelationManager extends RelationManager
                                     ->pdfFitType(PdfViewFit::FITV)
                                     ->pdfNavPanes(true),
                                 DatePicker::make('validity_date')
-                                    ->label('This document is valid until')
+                                    ->label('Validity Date')
+                                    ->belowLabel('Leave blank if not applicable')
                                     ->placeholder('Select validity date')
-                                    ->required()
                                     ->native(false)
                                     ->displayFormat('F d, Y')
                                     ->firstDayOfWeek(1),
                                 Hidden::make('file_size')
                             ])
                     ])
-                    ->action(function (Document $record, $data) {
-                        $supplier = $this->getOwnerRecord();
-                        $attachment = $supplier->attachments()->where('document_id', $record->id)->first();
-                        if (!$attachment) {
-                            // Create new pivot record
-                            $supplier->attachments()->create([
-                                'document_id' => $record->id,
-                                'file_path' => $data['file_path'],
-                                'validity_date' => $data['validity_date'],
-                                'file_size' => $data['file_size'],
-                            ]);
-                        } else {
-                            // Remove existing file from storage
-                            Storage::disk('public')->delete($attachment->file_path);
-                            // Update existing record
-                            $attachment->update([
-                                'file_path' => $data['file_path'],
-                                'validity_date' => $data['validity_date'],
-                                'file_size' => $data['file_size'],
-                            ]);
-                        }
-
-                        // Create a status record
-                        $attachment = $supplier->attachments()->where('document_id', $record->id)->first();
-                        $remarks = match (request()->user()->role->value) {
-                            'administrator' => 'uploaded and validated by an administrator',
-                            'supplier' => 'uploaded for review',
-                            default => 'updated',
-                        };
-                        $attachment->statuses()->create([
-                            'user_id' => request()->user()->id,
-                            'status' => request()->user()->role->value === 'administrator' ? Status::Validated : Status::PendingReview,
-                            'statusable_type' => Attachment::class,
-                            'statusable_id' => $attachment->id,
-                            'remarks' => '<p>New document attached on ' . now()->format('F d, Y') . ' with file name "' . basename($data['file_path']) . '" is ' . $remarks . '.</p>',
-                            'status_date' => now(),
-                        ]);
-
-                        Notification::make()
-                            ->title('Document attached successfully')
-                            ->success()
-                            ->send();
-                    })
+                    ->action(fn (Document $record, $data) => AttachDocument::handle($this->getOwnerRecord(), $record, $data))
                     ->color('primary'),
             ])
             ->toolbarActions([

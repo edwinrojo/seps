@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages\Auth;
 
+use App\Livewire\ProjectLogo;
 use Filament\Auth\Pages\Login as BasePage;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use Illuminate\Validation\ValidationException;
@@ -9,12 +10,17 @@ use Filament\Auth\Http\Responses\Contracts\LoginResponse;
 use Filament\Auth\MultiFactor\Contracts\HasBeforeChallengeHook;
 use Filament\Facades\Filament;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Schemas\Components\Livewire;
+use Filament\Schemas\Components\RenderHook;
+use Filament\Schemas\Schema;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Auth\SessionGuard;
 use Illuminate\Contracts\Auth\Authenticatable;
 
-
 class Login extends BasePage
 {
+    protected string $view = 'filament.pages.auth.login';
+
     public function authenticate(): ?LoginResponse
     {
         try {
@@ -90,5 +96,10 @@ class Login extends BasePage
         session()->regenerate();
 
         return app(LoginResponse::class);
+    }
+
+    public function hasLogo(): bool
+    {
+        return false;
     }
 }

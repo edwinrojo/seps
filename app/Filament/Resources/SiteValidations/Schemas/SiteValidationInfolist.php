@@ -35,7 +35,10 @@ class SiteValidationInfolist
                             ->icon(Heroicon::CalendarDays)
                             ->label('Validation Date')
                             ->dateTime('F d, Y h:i A'),
-                        TextEntry::make('purpose')
+                        TextEntry::make('validation_purpose.purpose')
+                            ->color('info')
+                            ->weight('bold')
+                            ->belowContent(fn ($record) => $record->validation_purpose?->description)
                             ->label('Purpose'),
                         TextEntry::make('remarks')
                             ->label('Remarks'),

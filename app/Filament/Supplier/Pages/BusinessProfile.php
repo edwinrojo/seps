@@ -285,7 +285,8 @@ class BusinessProfile extends Page
         return $data;
     }
 
-    protected function saveSupplierLobs($record, $data) {
+    protected function saveSupplierLobs($record, $data)
+    {
         // Save supplier LOBs
         if (isset($data['supplierLobs'])) {
             $record->supplierLobs()->delete(); // Remove existing LOBs

@@ -24,11 +24,13 @@
     <div id="app">
         <!-- Header -->
         <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200">
-            <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <nav class="container mx-auto px-6 py-2 flex justify-between items-center">
                 <div class="flex items-center space-x-2">
-                    <svg class="h-8 w-8 text-pink-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    {{-- <svg class="h-8 w-8 text-pink-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                    </svg>
+                    </svg> --}}
+                    {{-- Project Logo --}}
+                    <img src="{{ asset('project_files/SEPS Logo.png') }}" alt="Logo" class="h-14">
                     <span class="text-xl font-bold text-slate-900">{{ env('APP_NAME') }}</span>
                 </div>
                 {{-- check if not authenticated --}}

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class SupplierLob extends Model
 {
@@ -26,6 +27,11 @@ class SupplierLob extends Model
     public function lobSubcategory(): BelongsTo
     {
         return $this->belongsTo(LobSubcategory::class);
+    }
+
+    public function statuses(): MorphMany
+    {
+        return $this->morphMany(Status::class, 'statusable');
     }
 
 }

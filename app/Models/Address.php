@@ -67,4 +67,10 @@ class Address extends Model
     {
         return $this->morphOne(SiteImage::class, 'site_imageable');
     }
+
+    public function getIsValidatedAttribute(): bool
+    {
+        $latestStatus = $this->statuses()->latest()->first();
+        return $latestStatus ? $latestStatus->status === 'validated' : false;
+    }
 }

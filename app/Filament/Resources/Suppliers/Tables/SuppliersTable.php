@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Suppliers\Tables;
 
 use App\Filament\GlobalActions\SecureDeleteAction;
 use App\Filament\Resources\Suppliers\Schemas\AssignForm;
+use App\Helpers\SupplierStatus;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -48,7 +49,7 @@ class SuppliersTable
                 TextColumn::make('email')
                     ->label('Email Address')
                     ->getStateUsing(fn ($record, $table): array => [
-                        TextColumn::make('email')->record($record)->icon(Heroicon::Envelope)->table($table)->inline(),
+                        TextColumn::make('email')->record($record)->icon(Heroicon::AtSymbol)->table($table)->inline(),
                         TextColumn::make('website')->record($record)->icon(Heroicon::GlobeAlt)->table($table)->inline(),
                     ])
                     ->listWithLineBreaks()
@@ -60,7 +61,12 @@ class SuppliersTable
                         TextColumn::make('mobile_number')->record($record)->prefix('+63 ')->icon(Heroicon::DevicePhoneMobile)->table($table)->inline(),
                         TextColumn::make('landline_number')->record($record)->icon(Heroicon::Phone)->table($table)->inline(),
                     ])
-                    ->listWithLineBreaks()
+                    ->listWithLineBreaks(),
+                TextColumn::make('status')
+                    ->state(fn ($record) => SupplierStatus::getStatusLabel($record))
+                    ->color(fn ($record) => SupplierStatus::getStatusColor($record))
+                    ->badge()
+                    ->label('Status')
             ])
             ->filters([
                 TrashedFilter::make(),

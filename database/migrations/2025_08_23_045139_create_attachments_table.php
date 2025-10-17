@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignUlid('document_id')->nullable()->constrained('documents')->nullOnDelete();
             $table->text('file_path');
             $table->unsignedBigInteger('file_size');
-            $table->date('validity_date');
+            $table->date('validity_date')->nullable();
             $table->timestamps();
         });
     }

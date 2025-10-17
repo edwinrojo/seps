@@ -216,9 +216,9 @@ class SupplierInfolist
                             ->icon(Heroicon::OutlinedXCircle)
                             ->color('gray')
                             ->columnSpan(2),
-                        Livewire::make(SupplierDocumentsTable::class, [
-                            'supplier' => $schema->getRecord(),
-                        ]),
+                        Livewire::make(SupplierDocumentsTable::class, function ($record) {
+                            return ['supplier' => $record];
+                        })->hidden(fn ($record) => count($record->attachments) === 0),
                     ])
                     ->collapsible(),
             ])->columns(1);

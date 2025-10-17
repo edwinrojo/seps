@@ -46,13 +46,18 @@ class Supplier extends Model
         return $this->hasMany(SupplierLob::class);
     }
 
-    public function statuses(): MorphMany
-    {
-        return $this->morphMany(Status::class, 'statusable');
-    }
-
     public function attachments(): HasMany
     {
         return $this->hasMany(Attachment::class);
+    }
+
+    public function site_validations(): HasMany
+    {
+        return $this->hasMany(SiteValidation::class);
+    }
+
+    public function lob_statuses(): MorphMany
+    {
+        return $this->morphMany(Status::class, 'statusable');
     }
 }

@@ -163,6 +163,7 @@ class DatabaseSeeder extends Seeder
             ['title' => 'Stationery', 'description' => 'Pens, pencils, and other stationery items.'],
         ]);
 
+        $this->call(ValidationPurposeSeeder::class);
         $this->call(DocumentSeeder::class);
         $this->call(ProvinceSeeder::class);
         $this->call(MunicipalitySeeder::class);

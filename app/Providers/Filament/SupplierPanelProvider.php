@@ -39,6 +39,9 @@ class SupplierPanelProvider extends PanelProvider
             ->colors([
                 // 'primary' => Color::Amber,
             ])
+            ->brandLogo(asset('project_files/SEPS Logo.png'))
+            ->brandLogoHeight('2.5rem')
+            ->favicon(asset('project_files/SEPS Logo.png'))
             ->discoverResources(in: app_path('Filament/Supplier/Resources'), for: 'App\Filament\Supplier\Resources')
             ->discoverPages(in: app_path('Filament/Supplier/Pages'), for: 'App\Filament\Supplier\Pages')
             ->pages([

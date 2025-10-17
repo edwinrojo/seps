@@ -15,6 +15,7 @@ class SiteValidation extends Model
         'supplier_id',
         'address_id',
         'twg_id',
+        'validation_purpose_id',
         'validation_date',
         'purpose',
         'remarks',
@@ -33,6 +34,11 @@ class SiteValidation extends Model
     public function twg(): BelongsTo
     {
         return $this->belongsTo(Twg::class, 'twg_id', 'user_id');
+    }
+
+    public function validation_purpose(): BelongsTo
+    {
+        return $this->belongsTo(ValidationPurpose::class, 'validation_purpose_id');
     }
 
     public function site_images(): MorphMany

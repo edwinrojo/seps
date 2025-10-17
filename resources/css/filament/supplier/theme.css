@@ -1,7 +1,9 @@
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
+@import '../seps.css';
 
 @source '../../../../app/Filament/Supplier/**/*';
-@source '../../../../resources/views/filament/supplier/**/*';
+@source '../../../../resources/views/filament/**/*';
+@source '../../../../resources/views/livewire/**/*';
 
 /* .fi-in-repeatable-item {
     background-color: #f8f8f8;

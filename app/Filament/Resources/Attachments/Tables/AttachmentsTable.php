@@ -69,7 +69,7 @@ class AttachmentsTable
                     ->html()
                     ->formatStateUsing(function ($state): HtmlString {
                         $formatted_datetime = $state?->status_date ? Carbon::parse($state->status_date)->format('F d, Y h:i A') : '';
-                        return new HtmlString($state ? $state->status->getLabel() . '<br>' . $formatted_datetime : null);
+                        return new HtmlString($state ? '<div class="flex flex-col"><span class="font-bold">' . $state->status->getLabel() . '</span><span>' . $formatted_datetime . '</span></div>' : null);
                     })
                     ->badge()
                     ->color(fn ($state) => $state->status->getColor()),

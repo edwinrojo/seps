@@ -7,6 +7,7 @@ use App\Models\Attachment;
 use App\Models\Document;
 use App\Models\Status;
 use Carbon\Carbon;
+use Filament\Schemas\Components\Html;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Support\HtmlString;
 
@@ -16,10 +17,12 @@ class SupplierDocumentsColumns
     {
         return [
             TextColumn::make('title')
-                ->color('primary')
                 ->weight('bold')
                 ->tooltip(fn (Document $record): string => $record->description)
                 ->description(fn (Document $record): string => substr($record->description, 0, 70) . (strlen($record->description) > 70 ? '...' : ''))
+                ->formatStateUsing(function ($record, $state): HtmlString {
+                    return new HtmlString($state . ($record->is_required ? ' - <span class="text-danger-500 font-normal">Required</span>' : ''));
+                })
                 ->searchable(),
             TextColumn::make('validity_date')
                 ->state(fn (Document $record) => $supplier->attachments()->where('document_id', $record->id)->first()?->validity_date)

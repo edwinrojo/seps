@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Status as EnumStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,5 +33,11 @@ class Attachment extends Model
     public function statuses(): MorphMany
     {
         return $this->morphMany(Status::class, 'statusable');
+    }
+
+    public function getIsValidatedAttribute(): bool
+    {
+        $latest_status = $this->statuses()->latest()->first();
+        return $latest_status && $latest_status->status === EnumStatus::Validated;
     }
 }
