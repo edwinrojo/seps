@@ -68,7 +68,7 @@ class SupplierPanelProvider extends PanelProvider
             ])
             ->navigationItems([
                 NavigationItem::make('Profile')
-                    ->icon(Heroicon::OutlinedUser)
+                    ->icon(Heroicon::User)
                     ->label('User Profile')
                     ->url('/supplier/profile')
                     ->isActiveWhen(fn () => request()->routeIs('filament.supplier.auth.profile')),

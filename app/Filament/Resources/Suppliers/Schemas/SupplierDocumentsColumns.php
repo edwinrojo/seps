@@ -21,7 +21,7 @@ class SupplierDocumentsColumns
                 ->tooltip(fn (Document $record): string => $record->description)
                 ->description(fn (Document $record): string => substr($record->description, 0, 70) . (strlen($record->description) > 70 ? '...' : ''))
                 ->formatStateUsing(function ($record, $state): HtmlString {
-                    return new HtmlString($state . ($record->is_required ? ' - <span class="text-danger-500 font-normal">Required</span>' : ''));
+                    return new HtmlString($state . ($record->is_required ? ' - <span class="font-normal" style="color: #c10007;">Required</span>' : ''));
                 })
                 ->searchable(),
             TextColumn::make('validity_date')

@@ -2,6 +2,12 @@
 
 namespace App\Filament\Resources\Suppliers\Schemas;
 
+use App\Enums\UserRole;
+use App\Filament\GlobalActions\SiteImageAction;
+use App\Filament\Supplier\Actions\SupplierLOB;
+use App\Filament\Supplier\Schemas\AddressInformation;
+use App\Filament\Supplier\Schemas\BusinessInformation;
+use App\Filament\Supplier\Schemas\LineOfBusiness;
 use App\Livewire\SupplierDocumentsTable;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
@@ -11,6 +17,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Livewire;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
@@ -33,6 +40,7 @@ class SupplierInfolist
                 Section::make('Business Information')
                     ->description('Below is the information about your business profile. To make changes, click the "Manage Profile" button above.')
                     ->icon(Heroicon::InformationCircle)
+                    ->collapsed()
                     ->schema([
                         TextEntry::make('business_name')
                             ->extraAttributes(['style' => 'font-size: 1.5rem;'])
@@ -69,6 +77,55 @@ class SupplierInfolist
                             ->icon(Heroicon::Phone)
                             ->label('Landline Number')
                             ->color('primary'),
+                    ])
+                    ->afterHeader([
+                        Action::make('manage_business_information')
+                            ->label('Update')
+                            ->icon(Heroicon::PencilSquare)
+                            ->color('primary')
+                            ->modal()
+                            ->modalHeading('Manage Business Information')
+                            ->modalDescription('Update your business information in the form below.')
+                            ->modalSubmitAction(fn (Action $action) => $action->label('Save Changes')->icon(Heroicon::OutlinedPlusCircle))
+                            ->modalCancelAction(fn (Action $action) => $action->label('Cancel')->icon(Heroicon::XMark))
+                            ->modalIcon(Heroicon::PencilSquare)
+                            ->icon(Heroicon::PencilSquare)
+                            ->modalWidth(Width::FiveExtraLarge)
+                            ->closeModalByClickingAway(false)
+                            ->closeModalByEscaping(false)
+                            ->modalAutofocus(false)
+                            ->hidden(request()->user()->role !== UserRole::Supplier)
+                            ->fillForm(function ($record) {
+                                return $record ? [
+                                    'business_name' => $record->business_name,
+                                    'owner_name' => $record->owner_name,
+                                    'email' => $record->email,
+                                    'website' => $record->website,
+                                    'mobile_number' => $record->mobile_number,
+                                    'landline_number' => $record->landline_number,
+                                    'supplier_type' => $record->supplier_type,
+                                ] : [];
+                            })
+                            ->schema([
+                                Grid::make(2)
+                                    ->schema(BusinessInformation::getSchema())
+                            ])
+                            ->after(fn ($livewire) => $livewire->dispatch('refreshInfolist'))
+                            ->action(function (array $data, $record): void {
+                                $supplier = $record;
+                                if ($supplier) {
+                                    $supplier->update($data);
+                                } else {
+                                    $supplier()->create($data);
+                                }
+
+                                Notification::make()
+                                    ->title('Saved successfully')
+                                    ->success()
+                                    ->body('Changes to the record have been saved.')
+                                    ->send();
+                            })
+                            ->link(),
                     ])
                     ->collapsible()
                     ->columns(2),
@@ -123,6 +180,55 @@ class SupplierInfolist
                                     ->hiddenLabel()
                                     ->color('info'),
                             ])
+                    ])
+                    ->afterHeader([
+                        Action::make('manage_line_of_business')
+                            ->label('Update')
+                            ->icon(Heroicon::PencilSquare)
+                            ->color('primary')
+                            ->modal()
+                            ->modalHeading('Manage Line of Business')
+                            ->modalDescription('Update your line of business information in the form below.')
+                            ->modalSubmitAction(fn (Action $action) => $action->label('Save Changes')->icon(Heroicon::OutlinedPlusCircle))
+                            ->modalCancelAction(fn (Action $action) => $action->label('Cancel')->icon(Heroicon::XMark))
+                            ->modalIcon(Heroicon::PencilSquare)
+                            ->icon(Heroicon::PencilSquare)
+                            ->modalWidth(Width::FiveExtraLarge)
+                            ->closeModalByClickingAway(false)
+                            ->closeModalByEscaping(false)
+                            ->modalAutofocus(false)
+                            ->hidden(request()->user()->role !== UserRole::Supplier)
+                            ->fillForm(function ($record) {
+                                $data = $record->supplierLobs
+                                    ->groupBy('lob_category_id')
+                                    ->map(function ($items, $categoryId) {
+                                        return [
+                                            'lob_category_id' => $categoryId,
+                                            'lob_subcategory_id' => $items->pluck('lob_subcategory_id')->toArray(),
+                                        ];
+                                    })
+                                    ->values()
+                                    ->toArray();
+
+                                return $record ? [
+                                    'supplierLobs' => $data,
+                                ] : [];
+                            })
+                            ->schema([
+                                Grid::make(2)
+                                    ->schema(LineOfBusiness::getSchema())
+                            ])
+                            ->after(fn ($livewire) => $livewire->dispatch('refreshInfolist'))
+                            ->action(function (array $data, $record): void {
+                                SupplierLOB::save($record, $data);
+
+                                Notification::make()
+                                    ->title('Saved successfully')
+                                    ->success()
+                                    ->body('Changes to the record have been saved.')
+                                    ->send();
+                            })
+                            ->link(),
                     ])
                     ->collapsible(),
                 Section::make('Address Information')
@@ -199,26 +305,62 @@ class SupplierInfolist
                                     })
                             ])
                     ])
+                    ->afterHeader([
+                        Action::make('manage_address_information')
+                            ->label('Update')
+                            ->icon(Heroicon::PencilSquare)
+                            ->color('primary')
+                            ->modal()
+                            ->modalHeading('Manage Address Information')
+                            ->modalDescription('Update your address information in the form below.')
+                            ->modalSubmitAction(fn (Action $action) => $action->label('Save Changes')->icon(Heroicon::OutlinedPlusCircle))
+                            ->modalCancelAction(fn (Action $action) => $action->label('Cancel')->icon(Heroicon::XMark))
+                            ->modalIcon(Heroicon::PencilSquare)
+                            ->icon(Heroicon::PencilSquare)
+                            ->modalWidth(Width::FiveExtraLarge)
+                            ->closeModalByClickingAway(false)
+                            ->closeModalByEscaping(false)
+                            ->modalAutofocus(false)
+                            ->hidden(request()->user()->role !== UserRole::Supplier)
+                            ->fillForm(function ($record) {
+                                return $record ? [
+                                    'addresses' => $record->addresses()->get(),
+                                ] : [];
+                            })
+                            ->schema(AddressInformation::getSchema())
+                            ->after(fn ($livewire) => $livewire->dispatch('refreshInfolist'))
+                            ->action(function (array $data, $record): void {
+                                $addresses = $data['addresses'] ?? [];
+                                foreach ($addresses as $addressData) {
+                                    if (isset($addressData['id'])) {
+                                        $address = $record->addresses()->find($addressData['id']);
+                                        if ($address) {
+                                            $address->update($addressData);
+                                            SiteImageAction::save($address, $addressData['site_image']['file_path']);
+                                            continue;
+                                        }
+                                    }
+                                    $record->addresses()->create($addressData);
+                                    SiteImageAction::save($address, $addressData['site_image']['file_path']);
+                                }
+
+                                Notification::make()
+                                    ->title('Saved successfully')
+                                    ->success()
+                                    ->body('Changes to the record have been saved.')
+                                    ->send();
+                            })
+                            ->link(),
+                    ])
                     ->collapsible(),
                 Section::make('Documents')
                     ->description('Below are the documents you have uploaded for your business. You can add or update documents as needed.')
                     ->icon(Heroicon::DocumentText)
                     ->collapsed()
                     ->schema([
-                        TextEntry::make('business_name')
-                            ->formatStateUsing(function ($state): string {
-                                return 'No records available';
-                            })
-                            ->size(TextSize::Medium)
-                            ->alignCenter()
-                            ->hidden(fn ($record) => count($record->attachments) > 0)
-                            ->hiddenLabel()
-                            ->icon(Heroicon::OutlinedXCircle)
-                            ->color('gray')
-                            ->columnSpan(2),
                         Livewire::make(SupplierDocumentsTable::class, function ($record) {
                             return ['supplier' => $record];
-                        })->hidden(fn ($record) => count($record->attachments) === 0),
+                        }),
                     ])
                     ->collapsible(),
             ])->columns(1);

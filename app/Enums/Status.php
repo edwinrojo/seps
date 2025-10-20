@@ -55,4 +55,14 @@ enum Status: string implements HasLabel, HasColor, HasIcon
             self::Expired => 'heroicon-s-exclamation-circle',
         };
     }
+
+    public function getOutlinedFilamentIcon(): string
+    {
+        return match ($this) {
+            self::PendingReview => 'heroicon-o-clock',
+            self::Rejected => 'heroicon-o-x-circle',
+            self::Validated => 'heroicon-o-shield-check',
+            self::Expired => 'heroicon-o-exclamation-circle',
+        };
+    }
 }
