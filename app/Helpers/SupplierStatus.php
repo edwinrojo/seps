@@ -2,88 +2,51 @@
 
 namespace App\Helpers;
 
+use App\Helpers\Validations\Models\AddressValidation;
+use App\Helpers\Validations\Models\DocumentValidation;
+use App\Models\Address;
 use App\Models\Document;
 use App\Models\Supplier;
+use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasLabel;
 
 class SupplierStatus
 {
-    public static function getStatusLabel(Supplier $supplier): string
+    private AddressValidation $addressValidation;
+    private DocumentValidation $documentValidation;
+
+    private bool $isAddressValid = false;
+    private bool $isDocumentValid = false;
+
+    public function __construct(Supplier $supplier)
     {
-        $address_Label = self::addressValidation($supplier) ? 'Validated' : 'Pending site validation';
-        if (self::addressValidation($supplier)) {
-            return 'Validated';
-        } else {
-            return 'Pending Validation / Lacking Documents';
-        }
+        $addressValidation = new AddressValidation($supplier);
+        $documentValidation = new DocumentValidation($supplier);
+
+        $this->isAddressValid = $addressValidation->isValid();
+        $this->isDocumentValid = $documentValidation->isValid();
+
+        $this->addressValidation = $addressValidation;
+        $this->documentValidation = $documentValidation;
     }
 
-    public static function getStatusColor(Supplier $supplier): string
+    public function getLabels(): array
     {
-        if (self::addressValidation($supplier)) {
-            return 'success';
-        } else {
-            return 'warning';
-        }
+        return [
+            [
+                'label' => $this->documentValidation->getLabel(),
+                'color' => $this->documentValidation->getColor(),
+            ],
+            [
+                'label' => $this->addressValidation->getLabel(),
+                'color' => $this->addressValidation->getColor(),
+            ],
+        ];
     }
 
-    public static function addressValidation(Supplier $supplier): bool
+    public function isFullyValidated(): bool
     {
-        if ($supplier->addresses->isEmpty()) {
-            return false;
-        }
-
-        $is_site_validated = true;
-
-        foreach ($supplier->addresses as $address) {
-            if (! $address->is_validated) {
-                $is_site_validated = false;
-                break;
-            }
-        }
-
-        return $is_site_validated;
-    }
-
-    public static function documentValidation(Supplier $supplier): bool
-    {
-        if ($supplier->attachments->isEmpty()) {
-            return false;
-        }
-
-        $required_documents = Document::where('procurement_type', 'LIKE', '%' . $supplier->supplier_type->value . '%')
-            ->where('is_required', true)
-            ->count();
-        if ($supplier->attachments->count() < $required_documents) {
-            return false;
-        }
-
-        $is_document_validated = true;
-
-        foreach ($supplier->attachments as $attachment) {
-            if (! $attachment->is_validated) {
-                $is_document_validated = false;
-                break;
-            }
-        }
-
-        return $is_document_validated;
-    }
-
-    public static function lobValidation(Supplier $supplier): bool
-    {
-        if ($supplier->supplierLobs->isEmpty()) {
-            return false;
-        }
-
-        $is_lob_validated = true;
-
-        foreach ($supplier->lob_statuses as $lob) {
-            if (! $lob->is_validated) {
-                $is_lob_validated = false;
-                break;
-            }
-        }
-
-        return $is_lob_validated;
+        return $this->isAddressValid
+            && $this->isDocumentValid;
     }
 }

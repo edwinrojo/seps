@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Suppliers\Schemas;
 
 use App\Enums\ProcType;
+use App\Filament\Supplier\Schemas\LineOfBusiness;
 use App\Models\LobCategory;
 use App\Models\LobSubcategory;
 use Filament\Actions\Action;
@@ -70,65 +71,7 @@ class SupplierForm
                     ->description('Please provide the line of business details.')
                     ->icon(Heroicon::Briefcase)
                     ->hiddenOn('create')
-                    ->schema([
-                        Repeater::make('supplierLobs')
-                            ->hiddenLabel()
-                            ->columns(2)
-                            ->grid(2)
-                            ->addActionAlignment(Alignment::Start)
-                            ->addActionLabel('Add Line of Business')
-                            ->addAction(fn ($action) => $action->icon(Heroicon::OutlinedPlusCircle))
-                            ->columnSpanFull()
-                            ->deleteAction(
-                                fn (Action $action) => $action->requiresConfirmation(),
-                            )
-                            ->table([
-                                TableColumn::make('Category'),
-                                TableColumn::make('Subcategory'),
-                            ])
-                            ->schema([
-                                Select::make('lob_category_id')
-                                    ->label('Category')
-                                    ->options(fn () => LobCategory::pluck('title', 'id')->toArray())
-                                    ->options(function () {
-                                        $lobCategories = LobCategory::all();
-                                        // add description to next line via HtmlString
-                                        return $lobCategories->pluck('title', 'id')->mapWithKeys(function ($title, $id) use ($lobCategories) {
-                                            $description = $lobCategories->where('id', $id)->first()->description;
-                                            return [$id => '<b>'.$title.'</b>' . ($description ? "<span style='display: block;' class='text-sm text-gray-500'>$description</span>" : '')];
-                                        });
-                                    })
-                                    ->allowHtml()
-                                    ->required()
-                                    ->reactive()
-                                    ->afterStateUpdated(fn (callable $set) => $set('lob_subcategory_id', null))
-                                    ->searchable()
-                                    ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                                    ->placeholder('Select Category'),
-                                Select::make('lob_subcategory_id')
-                                    ->label('Subcategory')
-                                    ->multiple()
-                                    ->required()
-                                    ->searchable()
-                                    ->hidden(function (callable $get) {
-                                        $categoryId = $get('lob_category_id');
-                                        $subcategories = LobSubcategory::where('lob_category_id', $categoryId)
-                                            ->pluck('title', 'id')
-                                            ->toArray();
-                                        return $subcategories === [] || !$categoryId;
-                                    })
-                                    ->options(function (callable $get) {
-                                        $categoryId = $get('lob_category_id');
-                                        if (!$categoryId) {
-                                            return [];
-                                        }
-                                        return LobSubcategory::where('lob_category_id', $categoryId)
-                                            ->pluck('title', 'id')
-                                            ->toArray();
-                                    })
-                                    ->placeholder('Select Subcategory'),
-                            ]),
-                    ])
+                    ->schema(LineOfBusiness::getSchema())
                     ->columns(2)
                     ->columnSpanFull(),
             ]);

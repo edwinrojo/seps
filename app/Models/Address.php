@@ -71,6 +71,6 @@ class Address extends Model
     public function getIsValidatedAttribute(): bool
     {
         $latestStatus = $this->statuses()->latest()->first();
-        return $latestStatus ? $latestStatus->status === 'validated' : false;
+        return $latestStatus && $latestStatus->status === \App\Enums\Status::Validated;
     }
 }

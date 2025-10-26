@@ -63,9 +63,21 @@ class SuppliersTable
                     ])
                     ->listWithLineBreaks(),
                 TextColumn::make('status')
-                    ->state(fn ($record) => SupplierStatus::getStatusLabel($record))
-                    ->color(fn ($record) => SupplierStatus::getStatusColor($record))
-                    ->badge()
+                    ->listWithLineBreaks()
+                    ->state(function ($record) {
+                        $supplierStatus = new SupplierStatus($record);
+                        $labelsWithColors = [];
+                        foreach ($supplierStatus->getLabels() as $item) {
+                            $labelsWithColors = array_merge($labelsWithColors, [
+                                "<span class='mb-1 fi-color fi-color-{$item['color']} fi-text-color-700 dark:fi-text-color-300 fi-badge fi-size-sm'>
+                                    <div class='inline-block px-2 rounded-full text-xs font-medium fi-color fi-color-{$item['color']} fi-text-color-600'>{$item['label']}</div>
+                                </span>"
+                            ]);
+                        }
+                        return $labelsWithColors;
+                    })
+                    ->color('success')
+                    ->html()
                     ->label('Status')
             ])
             ->filters([

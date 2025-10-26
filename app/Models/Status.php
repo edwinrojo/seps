@@ -21,12 +21,18 @@ class Status extends Model
         'status_date'
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'status' => EnumsStatus::class,
-        ];
-    }
+    /**
+     * Attribute casts for the model.
+     *
+     * Cast the `status` to the enum class and `status_date` to datetime so
+     * calling ->format() on the attribute returns a Carbon instance.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'status' => EnumsStatus::class,
+        'status_date' => 'datetime',
+    ];
 
     public function statusable(): MorphTo
     {

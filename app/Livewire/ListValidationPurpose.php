@@ -87,7 +87,7 @@ class ListValidationPurpose extends Component implements HasTable, HasForms, Has
                             ->label('Description'),
                         Checkbox::make('is_iv')
                             ->label('Supplier Status Validation')
-                            ->helperText('Please check if this purpose is included in the supplier status validation for the list of eligible suppliers.')
+                            ->helperText('Please mark check if this purpose is part of the supplier status validation for the list of eligible suppliers. Uncheck if it does not affect the supplier’s eligibility to participate in any procurement bidding.')
                     ])
                     ->action(function (ValidationPurpose $record, array $data) {
                         $record->update($data);
@@ -122,7 +122,7 @@ class ListValidationPurpose extends Component implements HasTable, HasForms, Has
                             ->label('Description'),
                         Checkbox::make('is_iv')
                             ->label('Supplier Status Validation')
-                            ->helperText('Please check if this purpose is included in the supplier status validation for the list of eligible suppliers.')
+                            ->helperText('Please mark check if this purpose is part of the supplier status validation for the list of eligible suppliers. Uncheck if it does not affect the supplier’s eligibility to participate in any procurement bidding.')
                     ])
                     ->action(function (array $data) {
                         ValidationPurpose::create($data);

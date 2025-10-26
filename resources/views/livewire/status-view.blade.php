@@ -18,7 +18,8 @@
                   <x-dynamic-component :component="$filament_icon" class="w-4 h-4 text-custom-600 fi-color-{{ $status_color }}"/>
             </span>
 
-            <h3 class="flex items-center mb-1 text-base font-semibold text-custom-700 fi-color-{{ $status_color }} dark:text-white">{{ $status_label }}
+            {{-- <h3 class="flex items-center mb-1 text-base font-semibold text-custom-700 fi-color-{{ $status_color }} dark:text-white">{{ $status_label }} --}}
+            <h3 class="flex items-center mb-1 text-base font-semibold">{{ $status_label }}
                 {{-- display if index is 0 --}}
                 @if ($loop->index === 0)
                     <span class="bg-primary-100 text-primary-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-primary-900 dark:text-primary-300 ms-3">Latest</span>

@@ -34,7 +34,32 @@ class CreateSiteValidation extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
+        // Extract validation_purposes before creating the model
+        $validationPurposes = $data['validation_purposes'] ?? [];
+        unset($data['validation_purposes']);
+
         $siteValidation = static::getModel()::create($data);
+
+        // Extract validation_purpose_id from each repeater item
+        $purposeIds = collect($validationPurposes)->pluck('validation_purpose_id')->filter()->toArray();
+        $siteValidation->validation_purposes()->sync($purposeIds);
+
+        // Handle address validation status for IV purposes
+        foreach ($validationPurposes as $purposeData) {
+            if (isset($purposeData['validation_purpose_id'])) {
+                $purpose = $siteValidation->validation_purposes()->where('id', $purposeData['validation_purpose_id'])->first();
+                if ($purpose && $purpose->is_iv) {
+                    $address = $siteValidation->address;
+                    $statusValue = $purposeData['status'] === 'approve' ? 'validated' : 'rejected';
+                    $address->statuses()->create([
+                        'user_id' => request()->user()->id,
+                        'status' => $statusValue,
+                        'remarks' => $purposeData['status_remarks'] ?? null,
+                        'status_date' => now(),
+                    ]);
+                }
+            }
+        }
 
         SiteImageAction::saveMultiple($siteValidation, $data['site_images'] ?? null);
 

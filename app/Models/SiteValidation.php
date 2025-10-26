@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class SiteValidation extends Model
@@ -36,9 +38,9 @@ class SiteValidation extends Model
         return $this->belongsTo(Twg::class, 'twg_id', 'user_id');
     }
 
-    public function validation_purpose(): BelongsTo
+    public function validation_purposes(): BelongsToMany
     {
-        return $this->belongsTo(ValidationPurpose::class, 'validation_purpose_id');
+        return $this->belongsToMany(ValidationPurpose::class, 'site_validation_purposes', 'site_validation_id', 'validation_purpose_id')->withTimestamps();
     }
 
     public function site_images(): MorphMany

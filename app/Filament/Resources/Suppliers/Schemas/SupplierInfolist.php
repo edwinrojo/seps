@@ -267,7 +267,7 @@ class SupplierInfolist
                                     })
                                     ->color(function ($record) {
                                         $status = $record->statuses()->latest()->first()->status ?? 'Pending for Validation';
-                                        return match ($status) {
+                                        return match ($status->getLabel()) {
                                             'Validated' => 'success',
                                             'Rejected' => 'danger',
                                             'Pending for Validation' => 'warning',
