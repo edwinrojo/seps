@@ -29,6 +29,7 @@ use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Hugomyb\FilamentMediaAction\Actions\MediaAction;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\HtmlString;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class SupplierInfolist
@@ -130,6 +131,10 @@ class SupplierInfolist
                     ->collapsible()
                     ->columns(2),
                 Section::make('Line of Business')
+                    ->heading(function ($record) {
+                        $status = $record->lob_statuses()->latest()->first();
+                        return new HtmlString('Line of Business <span class="text-sm font-normal text-custom-600 fi-color-'.$status->status->getColor().'">(' . ($status->status->getLabel() ?? 'Pending for Validation') . ')</span>');
+                    })
                     ->description('Below are the line of business details you have provided. To make changes, click the "Manage Profile" button above.')
                     ->icon(Heroicon::Briefcase)
                     ->collapsed()

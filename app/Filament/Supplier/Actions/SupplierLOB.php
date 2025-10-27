@@ -27,6 +27,14 @@ class SupplierLOB
                     ]);
                 }
             }
+
+            // create status
+            $record->lob_statuses()->create([
+                'user_id' => request()->user()->id,
+                'status' => \App\Enums\Status::PendingReview,
+                'remarks' => '<p>Lines of Business was updated by the Supplier.</p>',
+                'status_date' => now(),
+            ]);
         }
     }
 }

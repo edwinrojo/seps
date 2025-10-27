@@ -29,9 +29,4 @@ class SupplierLob extends Model
         return $this->belongsTo(LobSubcategory::class);
     }
 
-    public function statuses(): MorphMany
-    {
-        return $this->morphMany(Status::class, 'statusable');
-    }
-
 }

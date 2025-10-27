@@ -34,6 +34,11 @@ class DocumentForm
                                 "unique" => "This document was already created."
                             ])
                             ->required(),
+                        Select::make('procurement_type')
+                            ->options(ProcType::class)
+                            ->searchable()
+                            ->multiple()
+                            ->required(),
                         Select::make('document_type_id')
                             ->label('Document Type')
                             ->options(function () {
@@ -71,11 +76,6 @@ class DocumentForm
                             ->required(),
                         Textarea::make('description')
                             ->placeholder('Provide a brief description of the document.'),
-                        Select::make('procurement_type')
-                            ->options(ProcType::class)
-                            ->searchable()
-                            ->multiple()
-                            ->required(),
                         Toggle::make('is_required')
                             ->helperText('Indicates if this document is mandatory for submission.')
                             ->required(),

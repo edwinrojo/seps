@@ -16,13 +16,13 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Schema;
 use UnitEnum;
 
-class Settings extends Page
+class OtherListings extends Page
 {
     protected string $view = 'filament.pages.settings';
 
-    protected static ?string $title = 'Other Settings';
+    protected static ?string $title = 'Other Listings';
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedListBullet;
 
     protected static string | UnitEnum | null $navigationGroup = NavigationGroup::Administration;
 

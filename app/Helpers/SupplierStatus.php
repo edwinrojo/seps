@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use App\Helpers\Validations\Models\AddressValidation;
 use App\Helpers\Validations\Models\DocumentValidation;
+use App\Helpers\Validations\Models\LOBsValidation;
 use App\Models\Address;
 use App\Models\Document;
 use App\Models\Supplier;
@@ -14,20 +15,25 @@ class SupplierStatus
 {
     private AddressValidation $addressValidation;
     private DocumentValidation $documentValidation;
+    private LOBsValidation $lobsValidation;
 
     private bool $isAddressValid = false;
     private bool $isDocumentValid = false;
+    private bool $isLobsValid = false;
 
     public function __construct(Supplier $supplier)
     {
         $addressValidation = new AddressValidation($supplier);
         $documentValidation = new DocumentValidation($supplier);
+        $lobsValidation = new LOBsValidation($supplier);
 
         $this->isAddressValid = $addressValidation->isValid();
         $this->isDocumentValid = $documentValidation->isValid();
+        $this->isLobsValid = $lobsValidation->isValid();
 
         $this->addressValidation = $addressValidation;
         $this->documentValidation = $documentValidation;
+        $this->lobsValidation = $lobsValidation;
     }
 
     public function getLabels(): array
@@ -41,12 +47,17 @@ class SupplierStatus
                 'label' => $this->addressValidation->getLabel(),
                 'color' => $this->addressValidation->getColor(),
             ],
+            [
+                'label' => $this->lobsValidation->getLabel(),
+                'color' => $this->lobsValidation->getColor(),
+            ],
         ];
     }
 
     public function isFullyValidated(): bool
     {
         return $this->isAddressValid
-            && $this->isDocumentValid;
+            && $this->isDocumentValid
+            && $this->isLobsValid;
     }
 }

@@ -56,6 +56,38 @@ class EditSupplier extends EditRecord
     {
         $record->update($data);
 
+        // compare if LOBs are the same via lob_category_id and lob_subcategory_id
+        $existingLobs = $record->supplierLobs()
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'lob_category_id' => $item->lob_category_id,
+                    'lob_subcategory_id' => $item->lob_subcategory_id,
+                ];
+            })
+            ->toArray();
+        $newLobs = [];
+        if (isset($data['supplierLobs'])) {
+            foreach ($data['supplierLobs'] as $lobData) {
+                if (isset($lobData['lob_subcategory_id'])) {
+                    foreach ($lobData['lob_subcategory_id'] as $subcategoryId) {
+                        $newLobs[] = [
+                            'lob_category_id' => $lobData['lob_category_id'],
+                            'lob_subcategory_id' => $subcategoryId,
+                        ];
+                    }
+                } else {
+                    $newLobs[] = [
+                        'lob_category_id' => $lobData['lob_category_id'],
+                        'lob_subcategory_id' => null,
+                    ];
+                }
+            }
+        }
+        if ($existingLobs === $newLobs) {
+            return $record; // No changes in LOBs, skip updating
+        }
+
         // Save supplier LOBs
         if (isset($data['supplierLobs'])) {
             $record->supplierLobs()->delete(); // Remove existing LOBs
@@ -75,6 +107,14 @@ class EditSupplier extends EditRecord
                     ]);
                 }
             }
+
+            // create status
+            $record->lob_statuses()->create([
+                'user_id' => request()->user()->id,
+                'status' => \App\Enums\Status::Validated,
+                'remarks' => '<p>Lines of Business was updated by the Administrator.</p>',
+                'status_date' => now(),
+            ]);
         }
 
         return $record;
