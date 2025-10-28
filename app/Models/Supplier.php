@@ -60,4 +60,15 @@ class Supplier extends Model
     {
         return $this->morphMany(Status::class, 'statusable');
     }
+
+    public function latestStatus()
+    {
+        return $this->lob_statuses()->whereIn('id', function ($query) {
+            $query->selectRaw('MAX(id)')
+                ->from('statuses')
+                ->whereColumn('statusable_id', 'statuses.statusable_id')
+                ->where('statusable_type', self::class)
+                ->groupBy('statusable_id');
+        });
+    }
 }

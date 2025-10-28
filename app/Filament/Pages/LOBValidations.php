@@ -27,15 +27,30 @@ use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
 use App\Enums\Status as EnumsStatus;
 use App\Models\Attachment;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\RichEditor;
 use Filament\Notifications\Notification;
 use Filament\Forms\Components\ViewField;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Resources\Concerns\HasTabs;
+use Filament\Schemas\Components\Component;
+use Filament\Schemas\Components\EmbeddedTable;
+use Filament\Schemas\Components\RenderHook;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Schema;
+use Filament\View\PanelsRenderHook;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use UnitEnum;
 
-class LOBValidations extends Page implements HasTable, HasActions
+class LOBValidations extends Page implements HasTable, HasActions, HasForms
 {
     use InteractsWithTable;
     use InteractsWithActions;
+    use InteractsWithForms;
+    use HasTabs;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBriefcase;
 
@@ -56,14 +71,131 @@ class LOBValidations extends Page implements HasTable, HasActions
         return request()->user()->role === UserRole::Administrator;
     }
 
+    public function mount(): void
+    {
+        $this->loadDefaultActiveTab();
+    }
+
+    public function getDefaultActiveTab(): string|int|null
+    {
+        return 'all';
+    }
+
+    public function getTabs(): array
+    {
+        return [
+            'all' => Tab::make('All Records')
+                ->icon(Heroicon::ListBullet)
+                ->badgeColor('info')
+                ->badge(Supplier::whereHas('lob_statuses', function ($query) {
+                })->count()),
+            'validated' => Tab::make('Validated')
+                ->icon(Heroicon::ShieldCheck)
+                ->badgeColor('success')
+                ->modifyQueryUsing(fn (Builder $query) => $this->getValidatedTabQuery($query))
+                ->badge(fn () => Supplier::whereHas('latestStatus', function ($query) {
+                    $query->where('status', EnumsStatus::Validated);
+                })->count()),
+            'pending' => Tab::make('Pending Review')
+                ->icon(Heroicon::Clock)
+                ->badgeColor('warning')
+                ->modifyQueryUsing(fn (Builder $query) => $this->getPendingTabQuery($query))
+                ->badge(fn () => Supplier::whereHas('latestStatus', function ($query) {
+                    $query->where('status', EnumsStatus::PendingReview);
+                })->count()),
+            'rejected' => Tab::make('Rejected')
+                ->icon(Heroicon::XCircle)
+                ->badgeColor('danger')
+                ->modifyQueryUsing(fn (Builder $query) => $this->getRejectedTabQuery($query))
+                ->badge(fn () => Supplier::whereHas('latestStatus', function ($query) {
+                    $query->where('status', EnumsStatus::Rejected);
+                })->count()),
+            'expired' => Tab::make('Expired')
+                ->icon(Heroicon::ExclamationCircle)
+                ->badgeColor('danger')
+                ->modifyQueryUsing(fn (Builder $query) => $this->getExpiredTabQuery($query))
+                ->badge(fn () => Supplier::whereHas('latestStatus', function ($query) {
+                    $query->where('status', EnumsStatus::Expired);
+                })->count()),
+        ];
+    }
+
+    public function getValidatedTabQuery(Builder $query): Builder
+    {
+        return $query->whereHas('latestStatus', function (Builder $query1) {
+            $query1->where('status', EnumsStatus::Validated);
+        });
+    }
+
+    public function getPendingTabQuery(Builder $query): Builder
+    {
+        return $query->whereHas('latestStatus', function (Builder $query1) {
+            $query1->where('status', EnumsStatus::PendingReview);
+        });
+    }
+
+    public function getRejectedTabQuery(Builder $query): Builder
+    {
+        return $query->whereHas('latestStatus', function (Builder $query1) {
+            $query1->where('status', EnumsStatus::Rejected);
+        });
+    }
+
+    public function getExpiredTabQuery(Builder $query): Builder
+    {
+        return $query->whereHas('latestStatus', function (Builder $query1) {
+            $query1->where('status', EnumsStatus::Expired);
+        });
+    }
+
+    public function getTabsContentComponent(): Component
+    {
+        $tabs = $this->getCachedTabs();
+
+        return Tabs::make()
+            ->livewireProperty('activeTab')
+            ->contained(false)
+            ->tabs($tabs)
+            ->extraAttributes(['style' => 'display: block;'])
+            ->hidden(empty($tabs));
+    }
+
+    public function content(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                $this->getTabsContentComponent(), // This method returns a component to display the tabs above a table
+                RenderHook::make(PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_BEFORE),
+                EmbeddedTable::make(), // This is the component that renders the table that is defined in this resource
+                RenderHook::make(PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_AFTER),
+            ]);
+    }
+
     public function table(Table $table): Table
     {
         return $table
-            ->query(Supplier::query())
-            ->heading('Line of Business Validations')
+            ->query(Supplier::whereHas('lob_statuses'))
+            ->modifyQueryUsing(fn ($query) => $this->modifyQueryWithActiveTab($query))
+            ->heading(function ($livewire) {
+                switch ($livewire->activeTab) {
+                    case 'all':
+                        return 'All Records';
+                    case 'validated':
+                        return 'Validated Supplier LOBs';
+                    case 'pending':
+                        return 'Pending Supplier LOBs';
+                    case 'rejected':
+                        return 'Rejected Supplier LOBs';
+                    case 'expired':
+                        return 'Expired Supplier LOBs';
+                    default:
+                        return 'Line of Business Validations';
+                }
+            })
             ->description('This table displays all suppliers and their respective line of business (LOB) validation statuses. You can review the details and take necessary actions for each supplier\'s LOB submissions.')
             ->deferLoading()
             ->striped()
+            ->recordUrl(null)
             ->columns([
                 TextColumn::make('index')
                     ->width('1%')
@@ -176,7 +308,7 @@ class LOBValidations extends Page implements HasTable, HasActions
 
                         Notification::make()
                             ->title('Success')
-                            ->body('Attachment status updated successfully.')
+                            ->body('LOBs status updated successfully.')
                             ->success()
                             ->send();
                     })
@@ -191,5 +323,4 @@ class LOBValidations extends Page implements HasTable, HasActions
                 //
             ]);
     }
-
 }

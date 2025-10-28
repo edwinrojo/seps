@@ -133,6 +133,9 @@ class SupplierInfolist
                 Section::make('Line of Business')
                     ->heading(function ($record) {
                         $status = $record->lob_statuses()->latest()->first();
+                        if (! $status) {
+                            return new HtmlString('Line of Business');
+                        }
                         return new HtmlString('Line of Business <span class="text-sm font-normal text-custom-600 fi-color-'.$status->status->getColor().'">(' . ($status->status->getLabel() ?? 'Pending for Validation') . ')</span>');
                     })
                     ->description('Below are the line of business details you have provided. To make changes, click the "Manage Profile" button above.')

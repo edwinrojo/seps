@@ -35,7 +35,7 @@ class ListAttachments extends ListRecords
         // Document types
         $statuses = Status::cases();
         foreach ($statuses as $status) {
-            $tabs[$status->value] = Tab::make($status->name)
+            $tabs[$status->value] = Tab::make($status->getLabel())
                 ->icon(fn () => $status->getIcon())
                 ->badge(function () use ($status) {
                     return Attachment::query()->whereHas('statuses', function ($query) use ($status) {
