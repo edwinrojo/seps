@@ -22,6 +22,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Components\Wizard\Step;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Facades\Hash;
 
 class EditUser extends EditRecord
 {
@@ -73,6 +74,13 @@ class EditUser extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
+        // password update only when not empty
+        if (!empty($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
+        } else {
+            unset($data['password']);
+        }
+
         $record->update($data);
 
         switch ($record->role->value) {

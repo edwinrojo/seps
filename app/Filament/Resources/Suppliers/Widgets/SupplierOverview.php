@@ -31,6 +31,7 @@ class SupplierOverview extends StatsOverviewWidget
         \App\Models\Supplier::with([
             'addresses.statuses',
             'attachments.statuses',
+            'lob_statuses',
         ])->chunkById(200, function ($suppliers) use (&$count) {
             foreach ($suppliers as $supplier) {
                 $supplierStatus = new \App\Helpers\SupplierStatus($supplier);

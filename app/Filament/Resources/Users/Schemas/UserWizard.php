@@ -45,6 +45,10 @@ class UserWizard
                         ->mask('999-999-9999')
                         ->placeholder('912-345-6789')
                         ->required(),
+                    TextInput::make('password')
+                        ->helperText('Password must be at least 8 characters long. Leave blank to keep the current password if editing.')
+                        ->password()
+                        ->minLength(8),
                     ToggleButtons::make('status')
                         ->label('Account Status')
                         ->grouped()

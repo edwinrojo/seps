@@ -12,7 +12,7 @@
     background-color: #ffffff;
 }
 
-.fi-section {
+/* .fi-section {
     & > .fi-section-header {
         background-color: #fafafa;
     }
@@ -22,7 +22,7 @@
     & .fi-ta-header {
         background-color: #fafafa;
     }
-}
+} */
 
 .fi-simple-layout {
     position: relative;

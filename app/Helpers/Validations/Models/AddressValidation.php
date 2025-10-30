@@ -21,7 +21,7 @@ class AddressValidation implements Validator, HasLabel, HasColor
     public function isValid(): bool
     {
         if ($this->supplier->addresses->isEmpty()) {
-            $this->label = 'No addresses uploaded';
+            $this->label = 'No addresses provided';
             $this->color = 'warning';
             return false;
         }
