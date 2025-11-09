@@ -17,6 +17,9 @@
 /public/hot
 /public/storage
 /storage/*.key
+!/storage/.gitignore
+!/storage/app/public/project_files/
+!/storage/app/public/project_files/**
 /storage/pail
 /vendor
 Homestead.json
