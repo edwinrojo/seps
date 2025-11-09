@@ -8,7 +8,9 @@ use App\Filament\Supplier\Actions\SupplierLOB;
 use App\Filament\Supplier\Schemas\AddressInformation;
 use App\Filament\Supplier\Schemas\BusinessInformation;
 use App\Filament\Supplier\Schemas\LineOfBusiness;
+use App\Livewire\StatusView;
 use App\Livewire\SupplierDocumentsTable;
+use App\Models\Status;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Infolists\Components\ImageEntry;
@@ -187,7 +189,27 @@ class SupplierInfolist
                                     ->badge()
                                     ->hiddenLabel()
                                     ->color('info'),
-                            ])
+                            ]),
+                        Action::make('status_history')
+                            ->hidden(fn ($record) => $record->lob_statuses->isEmpty())
+                            ->button()
+                            ->icon(Heroicon::OutlinedClock)
+                            ->color('primary')
+                            ->label('View status history')
+                            ->modalWidth(Width::ExtraLarge)
+                            ->modalHeading('Line of Business Status History')
+                            ->modalDescription('View the status history of your line of business.')
+                            ->modalCancelAction(fn (Action $action) => $action->label('Close')->icon(Heroicon::XMark))
+                            ->slideOver()
+                            ->schema([
+                                Livewire::make(StatusView::class, function ($record) {
+                                    return [
+                                        'statuses' => $record->lob_statuses,
+                                    ];
+                                })
+                                ->key('lob-status-view-')
+                                ->extraAttributes(['class' => 'ms-5'])
+                            ]),
                     ])
                     ->afterHeader([
                         Action::make('manage_line_of_business')
@@ -260,27 +282,25 @@ class SupplierInfolist
                             ->hidden(fn ($record) => count($record->addresses) === 0)
                             ->grid(2)
                             ->schema([
-                                TextEntry::make('line_1')
+                                TextEntry::make('label')
                                     ->hiddenLabel()
-                                    ->formatStateUsing(fn ($state, $record) => $record->getFullAddressAttribute())
                                     ->icon(Heroicon::MapPin)
-                                    // ->size(TextSize::Large)
+                                    ->size(TextSize::Large)
                                     ->weight(FontWeight::Bold)
                                     ->color('primary'),
                                 TextEntry::make('line_1')
+                                    ->label('Full Address')
+                                    ->formatStateUsing(fn ($state, $record) => $record->getFullAddressAttribute())
+                                    ->icon(Heroicon::MapPin)
+                                    ->color('primary'),
+                                TextEntry::make('label')
                                     ->label('Status')
                                     ->badge()
                                     ->state(function ($record) {
-                                        return $record->statuses()->latest()->first()->status ?? 'Pending for Validation';
+                                        return $record->statuses()->latest()->first()->status->getLabel();
                                     })
                                     ->color(function ($record) {
-                                        $status = $record->statuses()->latest()->first()->status ?? 'Pending for Validation';
-                                        return match ($status->getLabel()) {
-                                            'Validated' => 'success',
-                                            'Rejected' => 'danger',
-                                            'Pending for Validation' => 'warning',
-                                            default => 'secondary',
-                                        };
+                                        return $record->statuses()->latest()->first()->status->getColor();
                                     })
                                     ->icon(Heroicon::Clock),
                                 TextEntry::make('line_1')
@@ -295,9 +315,27 @@ class SupplierInfolist
                                 TextEntry::make('site_image.file_path')
                                     ->hiddenLabel()
                                     ->formatStateUsing(fn () => '')
-                                    ->placeholder('No image available')
-                                    ->belowContent(function () {
+                                    ->belowContent(function ($record) {
                                         return [
+                                            Action::make('status_history')
+                                                ->button()
+                                                ->icon(Heroicon::OutlinedClock)
+                                                ->color('primary')
+                                                ->label('View status history')
+                                                ->modalWidth(Width::ExtraLarge)
+                                                ->modalHeading($record->label)
+                                                ->modalDescription('View the status history of this address.')
+                                                ->modalCancelAction(fn (Action $action) => $action->label('Close')->icon(Heroicon::XMark))
+                                                ->slideOver()
+                                                ->schema([
+                                                    Livewire::make(StatusView::class, function ($record) {
+                                                        return [
+                                                            'statuses' => $record->statuses,
+                                                        ];
+                                                    })
+                                                    ->key('address-status-view-'.$record->id)
+                                                    ->extraAttributes(['class' => 'ms-5'])
+                                                ]),
                                             MediaAction::make('storefront')
                                                 ->hidden(fn ($state) => !$state)
                                                 ->icon(Heroicon::OutlinedPhoto)
@@ -345,11 +383,28 @@ class SupplierInfolist
                                         if ($address) {
                                             $address->update($addressData);
                                             SiteImageAction::save($address, $addressData['site_image']['file_path']);
+
+                                            // Create new status
+                                            $address->statuses()->create([
+                                                'user_id' => request()->user()->id,
+                                                'status' => \App\Enums\Status::PendingReview,
+                                                'remarks' => '<p>Address information updated, pending re-validation.</p>',
+                                                'status_date' => now(),
+                                            ]);
+
                                             continue;
                                         }
                                     }
-                                    $record->addresses()->create($addressData);
+                                    $address = $record->addresses()->create($addressData);
                                     SiteImageAction::save($address, $addressData['site_image']['file_path']);
+
+                                    // Create new status
+                                    $address->statuses()->create([
+                                        'user_id' => request()->user()->id,
+                                        'status' => \App\Enums\Status::PendingReview,
+                                        'remarks' => '<p>Address information added, pending validation.</p>',
+                                        'status_date' => now(),
+                                    ]);
                                 }
 
                                 Notification::make()

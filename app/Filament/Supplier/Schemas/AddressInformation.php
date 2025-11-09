@@ -6,6 +6,7 @@ use App\Enums\ProcType;
 use App\Models\Barangay;
 use App\Models\Municipality;
 use App\Models\Province;
+use Dom\Text;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
@@ -25,6 +26,11 @@ class AddressInformation
                 ->label('Business Addresses')
                 ->schema([
                     Hidden::make('id'),
+                    TextInput::make('label')
+                        ->label('Address Label')
+                        ->placeholder('e.g., Head Office, Warehouse')
+                        ->required()
+                        ->maxLength(100),
                     TextInput::make('line_1')
                         ->label('Address Line 1')
                         ->placeholder('e.g., 123 Main St')

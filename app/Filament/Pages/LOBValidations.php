@@ -26,6 +26,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
 use App\Enums\Status as EnumsStatus;
+use App\Filament\Pages\Schemas\LOBValidationsModalForm;
 use App\Models\Attachment;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\RichEditor;
@@ -41,6 +42,7 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\View\PanelsRenderHook;
+use Filament\Notifications\Notifications;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use UnitEnum;
@@ -68,7 +70,7 @@ class LOBValidations extends Page implements HasTable, HasActions, HasForms
 
     public static function canAccess(): bool
     {
-        return request()->user()->role === UserRole::Administrator;
+        return request()->user()->role === UserRole::Administrator || request()->user()->role === UserRole::Twg;
     }
 
     public function mount(): void
@@ -248,57 +250,34 @@ class LOBValidations extends Page implements HasTable, HasActions, HasForms
                 Action::make('status')
                     ->icon(Heroicon::PencilSquare)
                     ->label('Update Status')
-                    ->modal()
+                    ->modal(function () {
+                        $lob_reference_document = app(SiteSettings::class)->lob_reference_document;
+                        return $lob_reference_document !== null;
+                    })
                     ->slideOver()
                     ->fillForm(function ($record) {
                         return [
                             'status' => $record->lob_statuses()->latest()->first()->status,
                         ];
                     })
-                    ->schema([
-                        ViewField::make('lob_listings')
-                            ->view('filament.forms.components.supplier-lob-listings', function ($record) {
-                                // create array of titles
-                                $array = $record->supplierLobs()
-                                    ->get()
-                                    ->groupBy('lob_category_id')
-                                    ->map(function ($items, $categoryId) {
-                                        return [
-                                            'lobCategory' => $items->first()->lobCategory,
-                                            'lob_subcategories_list' => $items->pluck('lobSubcategory.title')->filter(),
-                                        ];
-                                    })
-                                    ->values()
-                                    ->toArray();
-
-                                $lob_reference_document = app(SiteSettings::class)->lob_reference_document;
-                                if ($lob_reference_document) {
-                                    $document = Attachment::where('supplier_id', $record->id)
-                                        ->where('document_id', $lob_reference_document)
-                                        ->first();
-                                }
-
-                                return [
-                                    'lob_listings' => $array,
-                                    'reference_document' => $document ? ($document->is_validated ? $document : null) : null,
-                                ];
-                            })
-                            ->label('Instructions'),
-                        ToggleButtons::make('status')
-                            ->label('Status')
-                            ->options(EnumsStatus::class)
-                            ->inline()
-                            ->required(),
-                        RichEditor::make('remarks')
-                            ->label('Remarks')
-                            ->required()
-                            ->toolbarButtons([
-                                'italic',
-                                'underline',
-                                'strike',
-                            ])
-                    ])
+                    ->schema(function () {
+                        $lob_reference_document = app(SiteSettings::class)->lob_reference_document;
+                        if (!$lob_reference_document) {
+                            return null;
+                        }
+                        return LOBValidationsModalForm::configure();
+                    })
                     ->action(function ($record, array $data) {
+                        $lob_reference_document = app(SiteSettings::class)->lob_reference_document;
+                        if (!$lob_reference_document) {
+                            Notification::make()
+                                ->title('Configuration Missing')
+                                ->body('The LOB Reference Document is not configured in Site Settings. Please contact the system administrator.')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+
                         $record->lob_statuses()->create([
                             'user_id' => request()->user()->id,
                             'status' => $data['status'],

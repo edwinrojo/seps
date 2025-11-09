@@ -2,11 +2,12 @@
 
 namespace App\Filament\Resources\Suppliers\Tables;
 
+use App\Enums\ProcType;
 use App\Enums\Status;
+use App\Enums\UserRole;
 use App\Filament\GlobalActions\SecureDeleteAction;
 use App\Filament\Resources\Suppliers\Schemas\AssignForm;
 use App\Helpers\SupplierStatus;
-use App\Models\Supplier;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -90,7 +91,13 @@ class SuppliersTable
                     ->label('Status')
             ])
             ->filters([
-                TrashedFilter::make()->native(false),
+                TrashedFilter::make()->native(false)
+                    ->hidden(function () {
+                        return request()->user()->role === UserRole::EndUser || request()->user()->role === UserRole::Supplier;
+                    }),
+                SelectFilter::make('supplier_type')
+                    ->native(false)
+                    ->options(ProcType::class),
                 Filter::make('eligibility_status')
                     ->label('Eligibility Status')
                     ->indicator('Eligibility Status')
@@ -182,6 +189,7 @@ class SuppliersTable
                         ->tooltip('Edit supplier')
                         ->icon(Heroicon::PencilSquare),
                     Action::make('assign')
+                        ->authorize('update')
                         ->hiddenLabel()
                         ->color('gray')
                         ->tooltip('Assign/Edit user account')
@@ -216,11 +224,11 @@ class SuppliersTable
                 ])->buttonGroup()
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                ]),
+                // BulkActionGroup::make([
+                //     DeleteBulkAction::make(),
+                //     ForceDeleteBulkAction::make(),
+                //     RestoreBulkAction::make(),
+                // ]),
             ]);
     }
 }

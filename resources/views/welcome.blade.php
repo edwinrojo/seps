@@ -64,7 +64,7 @@
             </section>
 
             <!-- How It Works Section -->
-            <section class="py-20">
+            <section id="eligibility-form" class="py-20">
                 <div class="container mx-auto px-6">
                     <div class="text-center mb-12">
                         <h2 class="text-3xl font-bold text-slate-900">A Simple, Transparent Process</h2>
@@ -112,54 +112,87 @@
                 </div>
             </section>
 
-            <!-- Eligibility Form Section -->
-            <section id="eligibility-form" class="py-20 bg-white">
+            <!-- About Section -->
+            <section class="py-20 bg-white">
                 <div class="container mx-auto px-6">
-                    <div class="max-w-3xl mx-auto">
-                        <div class="text-center mb-12">
-                            <h2 class="text-3xl font-bold text-slate-900">Supplier Eligibility & Profiling Form</h2>
-                            <p class="mt-2 text-md text-slate-500">Complete the form below to begin the process.</p>
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl font-bold text-slate-900">About the Suppliers Eligibility and Profiling System</h2>
+                        <p class="mt-2 text-md text-slate-500">The <span class="font-semibold">Suppliers Eligibility and Profiling System (SEPS)</span> is an innovative platform developed to support the
+                            <span class="font-semibold">Procurement Management Office</span> in ensuring transparency, efficiency, and compliance in the procurement process of the Provincial Government.
+                            This system serves as a centralized repository where suppliers can register, update their profiles, and submit documentary requirements in accordance with existing
+                            government procurement laws and guidelines. By transitioning from manual submissions to a fully digital process, SEPS promotes a more organized and accessible supplier database that is aligned with the province’s digital transformation goals.</p>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-10 text-center">
+                        <div class="bg-white p-8 rounded-xl shadow-sm">
+                            <h3 class="text-3xl font-semibold mt-6 text-pink-600">Transparency</h3>
+                            <p class="mt-2 text-slate-600">
+                            SEPS provides full visibility into supplier registration and verification activities. Each step in the evaluation process is traceable,
+                            ensuring that all actions are properly logged and verifiable. This fosters a culture of openness, reduces human bias,
+                            and strengthens the integrity of procurement transactions within the Provincial Government.
+                            </p>
                         </div>
-
-                        <form id="supplier-form" class="space-y-6 bg-slate-50 p-8 rounded-lg border border-slate-200">
-                            <div>
-                                <label for="companyName" class="block text-sm font-medium text-slate-700">Company Name</label>
-                                <input type="text" id="companyName" name="companyName" required class="mt-1 block w-full px-4 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500">
-                            </div>
-
-                            <div>
-                                <label for="registrationNumber" class="block text-sm font-medium text-slate-700">Business Registration Number</label>
-                                <input type="text" id="registrationNumber" name="registrationNumber" required class="mt-1 block w-full px-4 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500">
-                            </div>
-
-                            <div>
-                                <label for="yearsInBusiness" class="block text-sm font-medium text-slate-700">Years in Business</label>
-                                <input type="number" id="yearsInBusiness" name="yearsInBusiness" min="0" required class="mt-1 block w-full px-4 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500">
-                            </div>
-
-                            <div>
-                                <label for="industry" class="block text-sm font-medium text-slate-700">Industry / Category</label>
-                                <select id="industry" name="industry" required class="mt-1 block w-full px-4 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500">
-                                    <option value="">Select an industry</option>
-                                    <option value="tech">Technology</option>
-                                    <option value="manufacturing">Manufacturing</option>
-                                    <option value="logistics">Logistics</option>
-                                    <option value="consulting">Consulting</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-
-                            <div class="pt-4">
-                                <button type="submit" id="submit-button" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-colors duration-300">
-                                    Submit for Review
-                                </button>
-                            </div>
-                        </form>
-                        <div id="success-message" class="hidden mt-6 p-4 bg-green-100 text-green-800 border border-green-200 rounded-lg text-center">
-                            <p class="font-semibold">Thank you for your submission!</p>
-                            <p>Your profile has been received. Our team will review it and get back to you within 5-7 business days.</p>
+                        <div class="bg-white p-8 rounded-xl shadow-sm">
+                            <h3 class="text-3xl font-semibold mt-6 text-pink-600">Efficiency</h3>
+                            <p class="mt-2 text-slate-600">
+                            By automating supplier profiling, document validation, and status monitoring, SEPS minimizes delays often caused by manual evaluation.
+                            The system provides procurement officers with an intuitive dashboard for real-time updates and notifications,
+                            helping them make faster, data-driven decisions while significantly reducing administrative workload.
+                            </p>
+                        </div>
+                        <div class="bg-white p-8 rounded-xl shadow-sm">
+                            <h3 class="text-3xl font-semibold mt-6 text-pink-600">Accountability</h3>
+                            <p class="mt-2 text-slate-600">
+                            All supplier records and status updates are securely stored and time-stamped, creating a verifiable audit trail for compliance purposes.
+                            This strengthens institutional accountability and ensures that all procurement actions adhere to the principles of fairness,
+                            transparency, and due process as mandated by government procurement policies.
+                            </p>
                         </div>
                     </div>
+                </div>
+            </section>
+
+            {{-- Developers Section --}}
+            <section class="py-20 bg-white">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl font-bold text-slate-900">Meet the Team Behind SEPS</h2>
+                        <p class="mt-2 text-md text-slate-500">The <span class="font-semibold">Suppliers Eligibility and Profiling System (SEPS)</span> was designed and developed by the
+                        <span class="font-semibold">University of the Immaculate Conception - MIT Students</span>
+                        to support the digital transformation initiatives of the Provincial Government of Davao del Sur.
+                        The system was built by dedicated developers committed to improving transparency and efficiency in public procurement.
+                        </p>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-10 text-center">
+                        <!-- Developer 1 -->
+                        <div class="flex flex-col items-center text-center">
+                            <img
+                            src="{{ asset('project_files/Edwin.jpg') }}"
+                            alt="Developer Avatar"
+                            class="w-32 h-32 rounded-full object-cover mb-4 shadow-md"
+                            />
+                            <h3 class="text-xl font-semibold text-gray-900">Edwin R. Rojo Jr.</h3>
+                            <p class="text-pink-600 font-medium mb-2">System Architect & Lead Developer</p>
+                            <p class="text-gray-600 max-w-xs">
+                            Responsible for the overall system architecture, backend integration, and database design.
+                            Focused on building secure and scalable solutions aligned with government standards.
+                            </p>
+                        </div>
+
+                        <!-- Developer 2 -->
+                        <div class="flex flex-col items-center text-center">
+                            <img
+                            src="{{ asset('project_files/Adrian.jpeg') }}"
+                            alt="Developer Avatar"
+                            class="w-32 h-32 rounded-full object-cover mb-4 shadow-md"
+                            />
+                            <h3 class="text-xl font-semibold text-gray-900">Adrian Pol Peligrino</h3>
+                            <p class="text-pink-600 font-medium mb-2">Frontend Developer & UI Designer</p>
+                            <p class="text-gray-600 max-w-xs">
+                            Handles the user interface, user experience design, and responsive front-end development
+                            using modern web technologies to ensure a seamless and accessible user experience.
+                            </p>
+                        </div>
+                        </div>
                 </div>
             </section>
         </main>
@@ -168,7 +201,7 @@
         <footer class="bg-slate-800 text-slate-400">
             <div class="container mx-auto px-6 py-8 text-center">
                 <p>&copy; 2025 SEPS. All Rights Reserved.</p>
-                <p class="text-sm mt-1">A modern solution for supplier management.</p>
+                <p class="text-sm mt-1">A modern solution for government supplier management.</p>
             </div>
         </footer>
     </div>

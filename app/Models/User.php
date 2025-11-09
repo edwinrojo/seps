@@ -102,7 +102,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
     {
         switch ($panel->getId()) {
             case 'admin':
-                return $this->role === UserRole::Administrator || $this->role === UserRole::Twg;
+                return $this->role === UserRole::Administrator || $this->role === UserRole::Twg || $this->role === UserRole::EndUser;
             case 'supplier':
                 return $this->role === UserRole::Supplier;
             default:

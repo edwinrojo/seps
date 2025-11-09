@@ -14,6 +14,7 @@ class Address extends Model
 
     protected $fillable = [
         'supplier_id',
+        'label',
         'line_1',
         'line_2',
         'municipality_id',

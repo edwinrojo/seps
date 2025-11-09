@@ -41,6 +41,7 @@ class SystemSettings extends SettingsPage
                                     return [$id => '<b class="text-primary-600">'.$title.'</b>' . ($description ? "<span style='display: block;' class='text-sm text-gray-500'>$description</span>" : '')];
                                 });
                             })
+                            ->helperText('Select the document that will serve as the reference for Line of Business (LOB) validations across the system.')
                             ->allowHtml()
                             ->searchable()
                             ->required(),

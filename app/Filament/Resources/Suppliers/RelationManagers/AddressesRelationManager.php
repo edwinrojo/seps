@@ -37,6 +37,11 @@ class AddressesRelationManager extends RelationManager
     {
         return $schema
             ->components([
+                TextInput::make('label')
+                    ->label('Address Label')
+                    ->placeholder('e.g., Head Office, Warehouse')
+                    ->required()
+                    ->maxLength(100),
                 TextInput::make('line_1')
                     ->label('Address Line 1')
                     ->placeholder('e.g., 123 Main St')
@@ -127,7 +132,17 @@ class AddressesRelationManager extends RelationManager
                     ->modalHeading('Create new address')
                     ->modalDescription('Fill out the form below to create a new address.')
                     ->label('Add Address')
-                    ->icon(Heroicon::OutlinedPlusCircle),
+                    ->icon(Heroicon::OutlinedPlusCircle)
+                    ->after(function (Model $record) {
+                        // Create new status
+                        $record->statuses()->create([
+                            'user_id' => request()->user()->id,
+                            'status' => \App\Enums\Status::PendingReview,
+                            'remarks' => '<p>Address information added, pending validation.</p>',
+                            'status_date' => now(),
+                        ]);
+
+                    }),
                 // AssociateAction::make(),
             ])
             ->recordActions([

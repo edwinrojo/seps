@@ -91,11 +91,12 @@ class AttachmentsTable
                     ->slideOver()
                     ->schema([
                         Livewire::make(StatusView::class, function ($record) {
-                                return [
-                                    'statuses' => $record->statuses,
-                                ];
-                            })
-                            ->extraAttributes(['class' => 'ms-5'])
+                            return [
+                                'statuses' => $record->statuses,
+                            ];
+                        })
+                        ->key('status_view_' . uniqid())
+                        ->extraAttributes(['class' => 'ms-5'])
                     ]),
                 ActionGroup::make([
                     ActionGroup::make([
