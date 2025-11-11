@@ -39,22 +39,26 @@ class AddressesRelationManager extends RelationManager
             ->components([
                 TextInput::make('label')
                     ->label('Address Label')
+                    ->helperText('Enter a label for the address (e.g., Head Office, Branch, Warehouse).')
                     ->placeholder('e.g., Head Office, Warehouse')
                     ->required()
                     ->maxLength(100),
                 TextInput::make('line_1')
                     ->label('Address Line 1')
+                    ->helperText('Enter the primary address line (e.g., street address, P.O. box).')
                     ->placeholder('e.g., 123 Main St')
                     ->required()
                     ->maxLength(255)
                     ->columnSpan(2),
                 TextInput::make('line_2')
                     ->label('Address Line 2')
+                    ->helperText('Enter the secondary address line (e.g., apartment, suite, unit, building).')
                     ->placeholder('e.g., Suite 100')
                     ->maxLength(255)
                     ->columnSpan(2),
                 Select::make('province_id')
                     ->label('Province')
+                    ->helperText('Select the province for this address.')
                     ->searchable()
                     ->required()
                     ->options(fn () => Province::pluck('name', 'id')->toArray())
@@ -62,6 +66,7 @@ class AddressesRelationManager extends RelationManager
                     ->afterStateUpdated(fn ($state, callable $set) => $set('municipality', null)),
                 Select::make('municipality_id')
                     ->label('Municipality/City')
+                    ->helperText('Select the municipality or city for this address.')
                     ->searchable()
                     ->required()
                     ->options(fn (callable $get) => $get('province_id') ? Municipality::where('province_id', $get('province_id'))->pluck('name', 'id')->toArray() : [])
@@ -69,17 +74,20 @@ class AddressesRelationManager extends RelationManager
                     ->afterStateUpdated(fn ($state, callable $set) => $set('barangay_id', null)),
                 Select::make('barangay_id')
                     ->label('Barangay')
+                    ->helperText('Select the barangay for this address.')
                     ->searchable()
                     ->required()
                     ->options(fn (callable $get) => $get('municipality_id') ? Barangay::where('municipality_id', $get('municipality_id'))->pluck('name', 'id')->toArray() : []),
                 TextInput::make('country')
                     ->default('Philippines')
                     ->label('Country')
+                    ->helperText('Enter the country for this address.')
                     ->placeholder('e.g., Philippines')
                     ->required()
                     ->maxLength(255),
                 TextInput::make('zip_code')
                     ->label('ZIP Code')
+                    ->helperText('Enter a valid ZIP code for this address.')
                     ->placeholder('e.g., 8000')
                     ->required()
                     ->maxLength(10)

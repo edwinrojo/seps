@@ -27,11 +27,13 @@ class SupplierForm
                     ->icon(Heroicon::InformationCircle)
                     ->schema([
                         TextInput::make('business_name')
+                            ->helperText('Enter the registered name of the business as it appears on official documents.')
                             ->label('Business Name')
                             ->placeholder('e.g., ABC Enterprises')
                             ->required()
                             ->maxLength(255),
                         TextInput::make('owner_name')
+                            ->helperText('Enter the full name of the business owner.')
                             ->label('Name of Owner')
                             ->required()
                             ->placeholder('e.g., Juan Dela Cruz'),
@@ -43,6 +45,7 @@ class SupplierForm
                             ->required()
                             ->maxLength(500),
                         TextInput::make('website')
+                            ->helperText('Enter the official website of the business. Make sure that it is a valid URL.')
                             ->prefix('https://')
                             ->label('Website')
                             ->placeholder('e.g., www.abc-enterprises.com')
@@ -56,10 +59,13 @@ class SupplierForm
                             ->belowContent('This number will be used to contact the business for any important inquiries and updates.')
                             ->maxLength(255),
                         TextInput::make('landline_number')
+                            ->helperText('Enter the landline number of the business, including area code.')
                             ->label('Landline Number')
                             ->placeholder('e.g., (082) 123-4567')
                             ->maxLength(255),
                         Select::make('supplier_type')
+                            ->label('Type of Supplier')
+                            ->helperText('Select the type of procurement the business specializes in.')
                             ->native(false)
                             ->searchable()
                             ->options(ProcType::class)

@@ -46,11 +46,13 @@ class LOBValidationsModalForm
                     ->label('Instructions'),
                 ToggleButtons::make('status')
                     ->label('Status')
+                    ->helperText('Choose the appropriate status for the Line of Business (LOB) validation. Approving the LOBs will mark the supplier\'s Line of Business as verified, while rejecting will require further action from the supplier.')
                     ->options(EnumsStatus::class)
                     ->inline()
                     ->required(),
                 RichEditor::make('remarks')
                     ->label('Remarks')
+                    ->helperText('Provide additional remarks or comments regarding the LOB validation decision. This information will be communicated to the supplier to inform them of the outcome and any necessary next steps.')
                     ->required()
                     ->toolbarButtons([
                         'italic',

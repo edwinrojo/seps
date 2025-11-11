@@ -29,21 +29,25 @@ class AddressInformation
                     TextInput::make('label')
                         ->label('Address Label')
                         ->placeholder('e.g., Head Office, Warehouse')
+                        ->helperText('A short label to identify this address.')
                         ->required()
                         ->maxLength(100),
                     TextInput::make('line_1')
                         ->label('Address Line 1')
                         ->placeholder('e.g., 123 Main St')
+                        ->helperText('Enter the first line of the address.')
                         ->required()
                         ->maxLength(255)
                         ->columnSpan(2),
                     TextInput::make('line_2')
                         ->label('Address Line 2')
                         ->placeholder('e.g., Suite 100')
+                        ->helperText('Enter the second line of the address (optional).')
                         ->maxLength(255)
                         ->columnSpan(2),
                     Select::make('province_id')
                         ->label('Province')
+                        ->helperText('Select the province for this address.')
                         ->searchable()
                         ->required()
                         ->options(fn () => Province::pluck('name', 'id')->toArray())
@@ -51,6 +55,7 @@ class AddressInformation
                         ->afterStateUpdated(fn ($state, callable $set) => $set('municipality', null)),
                     Select::make('municipality_id')
                         ->label('Municipality/City')
+                        ->helperText('Select the municipality or city for this address.')
                         ->searchable()
                         ->required()
                         ->options(fn (callable $get) => $get('province_id') ? Municipality::where('province_id', $get('province_id'))->pluck('name', 'id')->toArray() : [])
@@ -58,6 +63,7 @@ class AddressInformation
                         ->afterStateUpdated(fn ($state, callable $set) => $set('barangay_id', null)),
                     Select::make('barangay_id')
                         ->label('Barangay')
+                        ->helperText('Select the barangay for this address.')
                         ->searchable()
                         ->required()
                         ->options(fn (callable $get) => $get('municipality_id') ? Barangay::where('municipality_id', $get('municipality_id'))->pluck('name', 'id')->toArray() : []),
@@ -65,16 +71,19 @@ class AddressInformation
                         ->default('Philippines')
                         ->label('Country')
                         ->placeholder('e.g., Philippines')
+                        ->helperText('The country for this address.')
                         ->required()
                         ->maxLength(255),
                     TextInput::make('zip_code')
                         ->label('ZIP Code')
                         ->placeholder('e.g., 8000')
+                        ->helperText('Enter a valid ZIP code for this address.')
                         ->required()
                         ->maxLength(10),
                     FileUpload::make('site_image.file_path')
                         ->disk('public')
                         ->label('Site Image')
+                        ->helperText('Upload a storefront or site image for this address.')
                         ->imageEditor()
                         ->image()
                         ->getUploadedFileNameForStorageUsing(

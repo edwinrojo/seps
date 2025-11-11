@@ -35,6 +35,8 @@ class DocumentForm
                             ])
                             ->required(),
                         Select::make('procurement_type')
+                            ->label('Procurement Type')
+                            ->helperText('Select the procurement types applicable for this document.')
                             ->options(ProcType::class)
                             ->searchable()
                             ->multiple()
@@ -75,9 +77,11 @@ class DocumentForm
                             ->searchable()
                             ->required(),
                         Textarea::make('description')
+                            ->label('Document Description')
+                            ->helperText('Provide a detailed description of the document.')
                             ->placeholder('Provide a brief description of the document.'),
                         Toggle::make('is_required')
-                            ->helperText('Indicates if this document is mandatory for submission.')
+                            ->helperText('Indicates if this document is mandatory for submission. If enabled, suppliers must provide this document during their application or procurement process.')
                             ->required(),
                     ])
             ]);

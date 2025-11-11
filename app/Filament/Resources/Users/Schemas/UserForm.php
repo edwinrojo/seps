@@ -27,12 +27,18 @@ class UserForm
                         ->description('Provide account information below')
                         ->schema([
                             TextInput::make('first_name')
+                                ->helperText('Enter the first name of the user.')
                                 ->required(),
                             TextInput::make('last_name')
+                                ->helperText('Enter the last name of the user.')
                                 ->required(),
-                            TextInput::make('middle_name'),
-                            TextInput::make('suffix'),
+                            TextInput::make('middle_name')
+                                ->helperText('Enter the middle name of the user (optional).'),
+                            TextInput::make('suffix')
+                                ->helperText('Enter the suffix of the user (optional).'),
                             Select::make('role')
+                                ->label('User Role')
+                                ->helperText('Select the role assigned to the user.')
                                 ->searchable()
                                 ->required()
                                 ->native(false)
@@ -41,15 +47,19 @@ class UserForm
                                 ->live(),
                             TextInput::make('email')
                                 ->label('Email address')
+                                ->helperText('Enter a valid email address for the user.')
                                 ->email()
                                 ->unique(table: 'users', column: 'email')
                                 ->required(),
                             TextInput::make('contact_number')
+                                ->label('Contact Number')
+                                ->helperText('Enter the contact number of the user.')
                                 ->prefix('+63')
                                 ->mask('999-999-9999')
                                 ->placeholder('912-345-6789')
                                 ->required(),
                             ToggleButtons::make('status')
+                                ->helperText('Set the account status of the user. Setting this to inactive will prevent the user from logging in.')
                                 ->label('Account Status')
                                 ->grouped()
                                 ->default('active')
@@ -75,6 +85,7 @@ class UserForm
                         })
                         ->schema([
                             Select::make('twg.office_id')
+                                ->helperText('Select the office where the user is assigned.')
                                 ->label('Office')
                                 ->native(false)
                                 ->searchable()
@@ -87,6 +98,7 @@ class UserForm
                                     }
                                 }),
                             TextInput::make('twg.position_title')
+                                ->helperText('Enter the position title of the user.')
                                 ->label('Position Title')
                                 ->required()
                                 ->afterStateHydrated(function ($component, $state, $record) {
@@ -95,6 +107,8 @@ class UserForm
                                     }
                                 }),
                             Select::make('twg.twg_type')
+                                ->helperText('Select the TWG type for the user.')
+                                ->label('TWG Type')
                                 ->native(false)
                                 ->searchable()
                                 ->options(ProcType::class)
@@ -114,6 +128,7 @@ class UserForm
                         })
                         ->schema([
                             Select::make('endUser.office_id')
+                                ->helperText('Select the office where the user is assigned.')
                                 ->label('Office')
                                 ->native(false)
                                 ->searchable()
@@ -126,6 +141,7 @@ class UserForm
                                     }
                                 }),
                             TextInput::make('endUser.designation')
+                                ->helperText('Enter the designation of the user.')
                                 ->label('Designation')
                                 ->required()
                                 ->afterStateHydrated(function ($component, $state, $record) {

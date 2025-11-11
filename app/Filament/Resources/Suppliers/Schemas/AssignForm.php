@@ -17,6 +17,7 @@ class AssignForm
                 ->native(false)
                 ->searchable()
                 ->searchPrompt('Search for a user account...')
+                ->helperText('Assign a user account to this supplier. Only user accounts without an existing supplier assignment are shown above. You may create a new user account if needed.')
                 ->prefixIcon(Heroicon::User)
                 ->preload()
                 ->options(fn ($record) => User::doesntHave('supplier')->where('role', 'supplier')->orWhere('id', $record->user_id)->pluck('name', 'id'))

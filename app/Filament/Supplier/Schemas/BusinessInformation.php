@@ -16,11 +16,13 @@ class BusinessInformation
             TextInput::make('business_name')
                 ->label('Business Name')
                 ->placeholder('e.g., ABC Enterprises')
+                ->helperText('Enter the registered name of your business as it appears on official documents.')
                 ->required()
                 ->maxLength(255),
             TextInput::make('owner_name')
                 ->label('Name of Owner')
                 ->required()
+                ->helperText('Enter the full name of the business owner.')
                 ->placeholder('e.g., Juan Dela Cruz'),
             TextInput::make('email')
                 ->email()
@@ -33,6 +35,7 @@ class BusinessInformation
             TextInput::make('website')
                 ->prefix('https://')
                 ->label('Website')
+                ->helperText('Enter the official website of your business. It must be a valid URL.')
                 ->placeholder('e.g., www.abc-enterprises.com')
                 ->maxLength(500)
                 ->columnSpan(2),
@@ -45,12 +48,14 @@ class BusinessInformation
                 ->belowContent('This number will be used to contact your company for any important inquiries and updates.')
                 ->maxLength(255),
             TextInput::make('landline_number')
+                ->helperText('Enter the landline number of your business, including area code.')
                 ->label('Landline Number')
                 ->placeholder('e.g., (082) 123-4567')
                 ->maxLength(255),
             Select::make('supplier_type')
                 ->native(false)
                 ->searchable()
+                ->helperText('Select the type of procurement your business specializes in.')
                 ->options(ProcType::class)
                 ->required()
         ];

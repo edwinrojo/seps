@@ -21,8 +21,18 @@ class LOBCategoryForm
                     ->columns(2)
                     ->schema([
                         TextInput::make('title')
+                            ->label('Category Title')
+                            ->placeholder('e.g., Construction, IT Services')
+                            ->unique()
+                            ->validationMessages([
+                                "unique" => "This Line of Business Category already exists."
+                            ])
+                            ->helperText('Enter the title of the Line of Business Category.')
                             ->required(),
                         Textarea::make('description')
+                            ->label('Category Description')
+                            ->placeholder('Provide a brief description of the category.')
+                            ->helperText('Describe the Line of Business Category in detail.')
                             ->columnSpanFull(),
                     ]),
             ]);

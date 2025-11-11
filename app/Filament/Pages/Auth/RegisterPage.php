@@ -15,16 +15,20 @@ class RegisterPage extends BaseRegister
             ->components([
                 TextInput::make('first_name')
                     ->label('First Name')
+                    ->helperText('Enter your given name as it appears on official documents.')
                     ->required()
                     ->maxLength(255),
                 TextInput::make('last_name')
                     ->label('Last Name')
+                    ->helperText('Enter your family name as it appears on official documents.')
                     ->required()
                     ->maxLength(255),
                 TextInput::make('middle_name')
-                    ->label('Middle Name'),
+                    ->label('Middle Name')
+                    ->helperText('Enter your middle name as it appears on official documents. This field is optional.'),
                 TextInput::make('suffix')
-                    ->label('Suffix'),
+                    ->label('Suffix')
+                    ->helperText('Enter any suffix associated with your name, such as Jr., Sr., III, etc. This field is optional.'),
                 TextInput::make('contact_number')
                     ->label('Contact Number')
                     ->prefix('+63')
@@ -35,8 +39,8 @@ class RegisterPage extends BaseRegister
                     ->maxLength(255),
                 $this->getEmailFormComponent()
                     ->belowContent('Use your official email address for verification purposes.'),
-                $this->getPasswordFormComponent(),
-                $this->getPasswordConfirmationFormComponent(),
+                $this->getPasswordFormComponent()->helperText('Create a strong password to secure your account. It should be at least 8 characters long.'),
+                $this->getPasswordConfirmationFormComponent()->helperText('Re-enter your password to confirm it matches.'),
             ])->columns(2);
     }
 

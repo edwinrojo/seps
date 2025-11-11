@@ -12,4 +12,17 @@ class CreateLOBCategory extends CreateRecord
 {
     protected static string $resource = LOBCategoryResource::class;
 
+    protected function getFormActions(): array
+    {
+        return [
+            // ...parent::getFormActions(),
+            $this->getCreateFormAction()
+                ->icon(Heroicon::OutlinedCheckCircle)
+                ->label('Create Document'),
+            $this->getCancelFormAction()
+                ->icon(Heroicon::OutlinedXMark)
+                ->label('Cancel'),
+        ];
+    }
+
 }
