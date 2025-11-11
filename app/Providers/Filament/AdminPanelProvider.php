@@ -38,6 +38,7 @@ class AdminPanelProvider extends PanelProvider
             ->login(Login::class)
             ->darkMode(false)
             ->globalSearch(false)
+            ->databaseNotifications()
             ->colors([
                 // 'primary' => Color::Amber,
             ])
