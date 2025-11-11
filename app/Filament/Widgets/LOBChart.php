@@ -31,7 +31,7 @@ class LOBChart extends ChartWidget
                         'rgb(153, 102, 255)',
                         'rgb(255, 159, 64)',
                     ],
-                    'hoverOffset' => 4,
+                    'hoverOffset' => 20,
                 ],
             ],
             'labels' => LobCategory::query()
