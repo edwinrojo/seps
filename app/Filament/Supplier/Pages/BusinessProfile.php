@@ -32,6 +32,8 @@ use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class BusinessProfile extends Page
 {
+    protected static ?int $navigationSort = 2;
+
     protected string $view = 'filament.supplier.pages.business-profile';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Briefcase;

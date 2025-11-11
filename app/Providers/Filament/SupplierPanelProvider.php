@@ -25,6 +25,7 @@ use Filament\Support\Icons\Heroicon;
 use App\Filament\Pages\Auth\EditProfile;
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Auth\RegisterPage;
+use App\Filament\Pages\SupplierDashboard;
 
 class SupplierPanelProvider extends PanelProvider
 {
@@ -45,12 +46,12 @@ class SupplierPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Supplier/Resources'), for: 'App\Filament\Supplier\Resources')
             ->discoverPages(in: app_path('Filament/Supplier/Pages'), for: 'App\Filament\Supplier\Pages')
             ->pages([
-                Dashboard::class,
+                SupplierDashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Supplier/Widgets'), for: 'App\Filament\Supplier\Widgets')
             ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
+                // AccountWidget::class,
+                // FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -68,6 +69,7 @@ class SupplierPanelProvider extends PanelProvider
             ])
             ->navigationItems([
                 NavigationItem::make('Profile')
+                    ->sort(3)
                     ->icon(Heroicon::User)
                     ->label('User Profile')
                     ->url('/supplier/profile')
