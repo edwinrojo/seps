@@ -31,7 +31,7 @@ class DocumentsOverview extends StatsOverviewWidget
                 ->description('All uploaded documents by suppliers')
                 ->descriptionIcon(Heroicon::OutlinedDocument, IconPosition::Before)
                 ->color('primary')
-                ->chart([10, 12, 8, 15, 9, 14, 20, 18, 22, 19, 25, 30]),
+                ->chart([10, 12, 8, 15, 9, 14, 20, 18, 22, 19, 25, 20]),
 
         ];
         return array_merge($total, $this->statusCharts());
@@ -50,9 +50,9 @@ class DocumentsOverview extends StatsOverviewWidget
             array_push($stats,
                 Stat::make($status->getLabel() . ' Documents', $statusCount)
                     ->description($status->getLabel() . ' documents uploaded by suppliers')
-                    ->descriptionIcon(Heroicon::OutlinedDocument, IconPosition::Before)
+                    ->descriptionIcon($status->getOutlinedFilamentIcon(), IconPosition::Before)
                     ->color($status->getColor())
-                    ->chart([10, 12, 8, 15, 9, 14, 20, 18, 22, 19, 25, 30])
+                    ->chart([10, 12, 8, 15, 9, 14, 20, 18, 22, 19, 25, 20])
             );
         }
 

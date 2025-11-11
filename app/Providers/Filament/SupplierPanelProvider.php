@@ -37,6 +37,7 @@ class SupplierPanelProvider extends PanelProvider
             ->login()
             ->passwordReset()
             ->darkMode(false)
+            ->globalSearch(false)
             ->colors([
                 // 'primary' => Color::Amber,
             ])

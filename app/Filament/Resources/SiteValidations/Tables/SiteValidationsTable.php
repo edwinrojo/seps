@@ -2,13 +2,20 @@
 
 namespace App\Filament\Resources\SiteValidations\Tables;
 
+use App\Models\ValidationPurpose;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class SiteValidationsTable
 {
@@ -42,8 +49,54 @@ class SiteValidationsTable
                     ->sortable(),
             ])
             ->filters([
-                //
-            ])
+                Filter::make('validation_purpose')
+                    ->label('Purpose')
+                    ->indicator('Purpose')
+                    ->schema([
+                        Select::make('validation_purposes')
+                            ->options(ValidationPurpose::pluck('purpose', 'id')->toArray())
+                            ->multiple()
+                            ->native(false),
+                        Select::make('twg_id')
+                            ->label('TWG Member')
+                            ->options(function () {
+                                return \App\Models\User::where('role', 'twg')->pluck('name', 'id')->toArray();
+                            })
+                            ->native(false)
+                            ->searchable()
+                            ->placeholder('Select TWG Member'),
+                        DatePicker::make('month_and_year')
+                            ->native()
+                            ->extraInputAttributes(['type' => 'month'])
+                            ->closeOnDateSelection()
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['validation_purposes'],
+                                function (Builder $query, $data): Builder {
+                                    // return site validations that contains any of the selected purposes
+                                    return $query->whereHas('validation_purposes', function ($q) use ($data) {
+                                        $q->whereIn('id', $data);
+                                    });
+                                }
+                            )
+                            ->when(
+                                $data['twg_id'],
+                                function (Builder $query, $data): Builder {
+                                    return $query->where('twg_id', $data);
+                                }
+                            )
+                            ->when(
+                                $data['month_and_year'],
+                                function (Builder $query, $data): Builder {
+                                    $date = \Carbon\Carbon::createFromFormat('Y-m', $data);
+                                    return $query->whereYear('validation_date', $date->year)
+                                        ->whereMonth('validation_date', $date->month);
+                                }
+                            );
+                    }),
+            ], layout: FiltersLayout::AfterContent)
             ->recordUrl(null)
             ->recordActions([
                 ViewAction::make()
@@ -54,7 +107,7 @@ class SiteValidationsTable
                 EditAction::make()
                     ->hidden(function ($record) {
                         // hide if record is not latest
-                        $latestRecord = $record->supplier->site_validations()->latest('created_at')->first();
+                        $latestRecord = $record->supplier->site_validations()->latest('validation_date')->first();
                         return $record->id !== $latestRecord->id;
                     })
             ])

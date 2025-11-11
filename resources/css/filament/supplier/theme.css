@@ -4,6 +4,7 @@
 @source '../../../../app/Filament/Supplier/**/*';
 @source '../../../../resources/views/filament/**/*';
 @source '../../../../resources/views/livewire/**/*';
+@source '../../../../resources/views/vendor/**/*';
 
 /* .fi-in-repeatable-item {
     background-color: #f8f8f8;
