@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\LobCategory;
+use App\Models\SupplierLob;
 use Filament\Widgets\ChartWidget;
 
 class LOBChart extends ChartWidget
@@ -19,9 +20,13 @@ class LOBChart extends ChartWidget
                 [
                     'label' => 'Line of Business',
                     'data' => LobCategory::query()
-                        ->withCount('supplierLobs')
-                        ->get()
-                        ->map(fn (LobCategory $lob) => $lob->supplier_lobs_count)
+                        ->select('lob_categories.id')
+                        ->selectSub(function ($query) {
+                            $query->from('supplier_lobs')
+                                ->selectRaw('COUNT(DISTINCT supplier_id)')
+                                ->whereColumn('supplier_lobs.lob_category_id', 'lob_categories.id');
+                        }, 'unique_supplier_count')
+                        ->pluck('unique_supplier_count')
                         ->toArray(),
                     'backgroundColor' => [
                         'rgb(255, 99, 132)',
@@ -34,10 +39,7 @@ class LOBChart extends ChartWidget
                     'hoverOffset' => 20,
                 ],
             ],
-            'labels' => LobCategory::query()
-                ->get()
-                ->map(fn (LobCategory $lob) => $lob->title)
-                ->toArray(),
+            'labels' => LobCategory::pluck('title')->toArray(),
         ];
     }
 
