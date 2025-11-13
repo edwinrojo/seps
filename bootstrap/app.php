@@ -2,6 +2,9 @@
 
 use App\Models\Attachment;
 use App\Models\User;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -9,6 +12,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -41,10 +45,29 @@ return Application::configure(basePath: dirname(__DIR__))
                 }
             });
 
+            // Notification
+            $count = $expiredAttachments->count();
+            if ($count > 0) {
+                $system_administrator = User::where('role', 'administrator')->first();
+                $system_administrator->notify(
+                    Notification::make()
+                        ->title('Document Expiration')
+                        ->body($count . ' ' . ' document/s have expired today. ' . now()->toDateString())
+                        ->danger()
+                        ->actions([
+                            Action::make('view')
+                                ->label('View Documents')
+                                ->url('/admin/attachments?tab=expired')
+                                ->button(),
+                        ])
+                        ->toDatabase(),
+                );
+            }
+
             Log::info('Expired attachment scheduler ran', [
                 'processed' => $expiredAttachments->count(),
             ]);
-        })->daily();
+        })->everyTwoSeconds();
     })
     ->withMiddleware(function (Middleware $middleware): void {
         //
