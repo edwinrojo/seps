@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withSchedule(function (Schedule $schedule) {
+        // Attachment Validity
         $schedule->call(function () {
             $expiredAttachments = Attachment::whereDate('validity_date', '<', Carbon::today())
                 ->whereHas('statuses', function ($query) {
@@ -58,6 +59,7 @@ return Application::configure(basePath: dirname(__DIR__))
                             Action::make('view')
                                 ->label('View Documents')
                                 ->url('/admin/attachments?tab=expired')
+                                ->markAsRead()
                                 ->button(),
                         ])
                         ->toDatabase(),
@@ -67,7 +69,7 @@ return Application::configure(basePath: dirname(__DIR__))
             Log::info('Expired attachment scheduler ran', [
                 'processed' => $expiredAttachments->count(),
             ]);
-        })->everyTwoSeconds();
+        })->daily();
     })
     ->withMiddleware(function (Middleware $middleware): void {
         //

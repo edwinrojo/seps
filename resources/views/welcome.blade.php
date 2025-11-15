@@ -186,7 +186,7 @@
                             class="w-32 h-32 rounded-full object-cover mb-4 shadow-md"
                             />
                             <h3 class="text-xl font-semibold text-gray-900">Adrian Pol Peligrino</h3>
-                            <p class="text-pink-600 font-medium mb-2">Frontend Developer & UI Designer</p>
+                            <p class="text-pink-600 font-medium mb-2">Frontend Developer & Technical Writer</p>
                             <p class="text-gray-600 max-w-xs">
                             Handles the user interface, user experience design, and responsive front-end development
                             using modern web technologies to ensure a seamless and accessible user experience.
