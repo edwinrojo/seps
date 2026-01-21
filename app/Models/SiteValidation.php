@@ -20,7 +20,8 @@ class SiteValidation extends Model
         'validation_purpose_id',
         'validation_date',
         'purpose',
-        'remarks',
+        'findings',
+        'recommendations',
     ];
 
     public function supplier(): BelongsTo

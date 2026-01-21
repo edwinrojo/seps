@@ -173,26 +173,24 @@
                             <h3 class="text-xl font-semibold text-gray-900">Edwin R. Rojo Jr.</h3>
                             <p class="text-pink-600 font-medium mb-2">System Architect & Lead Developer</p>
                             <p class="text-gray-600 max-w-xs">
-                            Responsible for the overall system architecture, backend integration, and database design.
-                            Focused on building secure and scalable solutions aligned with government standards.
+                            Leads the overall system architecture, backend implementation, and database design. He ensures that the system is built on a secure, scalable, and efficient foundation aligned with government procurement standards. He also oversees system integration, optimizes performance, and guides the technical direction of the project to ensure that all modules function cohesively and reliably.
                             </p>
                         </div>
 
                         <!-- Developer 2 -->
-                        <div class="flex flex-col items-center text-center">
+                        {{-- <div class="flex flex-col items-center text-center">
                             <img
                             src="{{ asset('project_files/Adrian.jpeg') }}"
                             alt="Developer Avatar"
                             class="w-32 h-32 rounded-full object-cover mb-4 shadow-md"
                             />
                             <h3 class="text-xl font-semibold text-gray-900">Adrian Pol Peligrino</h3>
-                            <p class="text-pink-600 font-medium mb-2">Frontend Developer & Technical Writer</p>
+                            <p class="text-pink-600 font-medium mb-2">Frontend Developer, Technical Writer, and Database Co-Designer</p>
                             <p class="text-gray-600 max-w-xs">
-                            Handles the user interface, user experience design, and responsive front-end development
-                            using modern web technologies to ensure a seamless and accessible user experience.
+                            Responsible for the user interface, user experience design, and responsive front-end development using modern web technologies. He ensures a clean, intuitive, and accessible user experience for all stakeholders. In addition, he contributes to database design and documentation, helping ensure that data structures support both functional requirements and long-term system maintainability. His technical writing provides clear, comprehensive project documentation.
                             </p>
-                        </div>
-                        </div>
+                        </div> --}}
+                    </div>
                 </div>
             </section>
         </main>

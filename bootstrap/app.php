@@ -2,6 +2,7 @@
 
 use App\Models\Attachment;
 use App\Models\User;
+use App\Settings\SiteSettings;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
@@ -46,7 +47,33 @@ return Application::configure(basePath: dirname(__DIR__))
                 }
             });
 
-            // Notification
+            // Document expiry notifications to suppliers
+            $number_of_days = app(SiteSettings::class)->document_expiry_notification_days;
+            if ($number_of_days !== null) {
+                $attachmentsExpiringSoon = Attachment::whereDate('validity_date', '=', Carbon::today()->addDays($number_of_days))
+                    ->whereHas('statuses', function ($query) {
+                        $query->where('id', function ($sub) {
+                            $sub->selectRaw('MAX(id)')
+                                ->from('statuses as s2')
+                                ->whereColumn('s2.statusable_id', 'statuses.statusable_id')
+                                ->whereColumn('s2.statusable_type', 'statuses.statusable_type');
+                        })->where('status', '!=', 'expired');
+                    })
+                    ->get();
+                foreach ($attachmentsExpiringSoon as $attachment) {
+                    $supplier = $attachment->supplier;
+                    $supplier->user->notify(
+                        Notification::make()
+                            ->title('Document Expiry Reminder')
+                            ->body('Your document "' . $attachment->document->title . '" is set to expire on ' . Carbon::parse($attachment->validity_date)->toFormattedDateString() . '. Please take the necessary actions to renew it.')
+                            ->warning()
+                            ->toDatabase(),
+                    );
+                }
+            }
+
+
+            // Expired Notification
             $count = $expiredAttachments->count();
             if ($count > 0) {
                 $system_administrator = User::where('role', 'administrator')->first();
@@ -69,7 +96,7 @@ return Application::configure(basePath: dirname(__DIR__))
             Log::info('Expired attachment scheduler ran', [
                 'processed' => $expiredAttachments->count(),
             ]);
-        })->daily();
+        })->everyTwoSeconds();
     })
     ->withMiddleware(function (Middleware $middleware): void {
         //

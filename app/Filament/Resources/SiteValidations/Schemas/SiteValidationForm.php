@@ -6,6 +6,7 @@ use App\Models\Address;
 use App\Models\ValidationPurpose;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
@@ -55,6 +56,12 @@ class SiteValidationForm
                             })
                             ->native(false)
                             ->required(),
+                        MarkdownEditor::make('findings')
+                            ->label('Findings')
+                            ->helperText('Provide a detailed account of the findings from the site validation. This will be reflected in the validation report.'),
+                        MarkdownEditor::make('recommendations')
+                            ->label('Recommendations')
+                            ->helperText('Provide recommendations based on the findings of the site validation. This will be reflected in the validation report.'),
                         FileUpload::make('site_images')
                             ->disk('public')
                             ->label('Site Images')
@@ -70,11 +77,6 @@ class SiteValidationForm
                             ->maxSize(2048)
                             ->moveFiles()
                             ->imagePreviewHeight('200'),
-                        Textarea::make('remarks')
-                            ->label('Remarks')
-                            ->helperText('Provide any additional remarks or observations from the site validation.')
-                            ->rows(3)
-                            ->maxLength(1000),
                         DateTimePicker::make('validation_date')
                             ->label('Validation Date & Time')
                             ->helperText('Select the date and time when the site validation took place.')

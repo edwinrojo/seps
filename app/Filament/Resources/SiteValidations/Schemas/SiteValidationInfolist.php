@@ -52,8 +52,12 @@ class SiteValidationInfolist
                             })
                             ->html()
                             ->label('Purpose'),
-                        TextEntry::make('remarks')
-                            ->label('Remarks'),
+                        TextEntry::make('findings')
+                            ->markdown()
+                            ->label('Findings'),
+                        TextEntry::make('recommendations')
+                            ->markdown()
+                            ->label('Recommendations'),
                         TextEntry::make('twg.user.name')
                             ->icon(Heroicon::User)
                             ->color('info')

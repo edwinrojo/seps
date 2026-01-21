@@ -45,6 +45,11 @@ class SystemSettings extends SettingsPage
                             ->allowHtml()
                             ->searchable()
                             ->required(),
+                        Select::make('document_expiry_notification_days')
+                            ->native(false)
+                            ->label('Document Expiry Notification Days')
+                            ->options([30 => '30 Days', 15 => '15 Days', 7 => '7 Days'])
+                            ->helperText('Select the number of days prior to document expiry that suppliers will be notified.'),
                     ])
             ]);
     }
