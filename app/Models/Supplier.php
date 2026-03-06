@@ -9,10 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Supplier extends Model
 {
-    use HasUlids, SoftDeletes;
+    use HasUlids, SoftDeletes, LogsActivity;
 
     protected $fillable = [
         'user_id',
@@ -59,6 +61,13 @@ class Supplier extends Model
     public function lob_statuses(): MorphMany
     {
         return $this->morphMany(Status::class, 'statusable');
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['business_name', 'website', 'email', 'mobile_number', 'landline_number', 'owner_name', 'supplier_type']);
+            // Chain fluent methods for configuration options
     }
 
     public function latestStatus()

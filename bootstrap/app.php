@@ -96,7 +96,7 @@ return Application::configure(basePath: dirname(__DIR__))
             Log::info('Expired attachment scheduler ran', [
                 'processed' => $expiredAttachments->count(),
             ]);
-        })->everyTwoSeconds();
+        })->daily();
     })
     ->withMiddleware(function (Middleware $middleware): void {
         //

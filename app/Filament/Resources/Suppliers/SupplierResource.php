@@ -72,6 +72,7 @@ class SupplierResource extends Resource
             'create' => CreateSupplier::route('/create'),
             'view' => ViewSupplier::route('/{record}'),
             'edit' => EditSupplier::route('/{record}/edit'),
+            'activities' => Pages\ListSupplierActivities::route('/{record}/activities'),
         ];
     }
 

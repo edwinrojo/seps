@@ -7,6 +7,7 @@ use App\Enums\Status;
 use App\Enums\UserRole;
 use App\Filament\GlobalActions\SecureDeleteAction;
 use App\Filament\Resources\Suppliers\Schemas\AssignForm;
+use App\Filament\Resources\Suppliers\SupplierResource;
 use App\Helpers\SupplierStatus;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -221,6 +222,13 @@ class SuppliersTable
                         ->tooltip('Delete supplier')
                         ->extraAttributes(['class' => 'danger-icon-color'])
                         ->icon(Heroicon::Trash),
+                    Action::make('activities')
+                        ->hiddenLabel()
+                        ->color('gray')
+                        ->tooltip('View activity logs')
+                        ->icon(Heroicon::OutlinedDocumentText)
+                        ->url(fn ($record) => SupplierResource::getUrl('activities', ['record' => $record]))
+
                 ])->buttonGroup()
             ])
             ->toolbarActions([

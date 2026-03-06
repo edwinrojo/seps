@@ -10,6 +10,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
 
     <!-- Styles / Scripts -->
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot'))) @vite(['resources/css/app.css', 'resources/js/app.js']) @else
@@ -18,7 +19,13 @@
     </style>
     @endif
 </head>
+<script type="module">
+    import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
 
+    createChat({
+        webhookUrl: 'https://gemmiform-unviable-homer.ngrok-free.dev'
+    });
+</script>
 <body class="bg-slate-50 font-sans text-slate-800">
 
     <div id="app">
@@ -203,7 +210,6 @@
             </div>
         </footer>
     </div>
-
 </body>
 
 </html>
