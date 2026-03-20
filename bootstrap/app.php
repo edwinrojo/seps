@@ -5,7 +5,6 @@ use App\Models\User;
 use App\Settings\SiteSettings;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
-use Filament\Support\Icons\Heroicon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -13,11 +12,11 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
@@ -42,7 +41,7 @@ return Application::configure(basePath: dirname(__DIR__))
                         'user_id' => $system_administrator->id,
                         'status' => 'expired',
                         'remarks' => '<p>The document has expired based on the validity date</p>',
-                        'status_date' => now()
+                        'status_date' => now(),
                     ]);
                 }
             });
@@ -65,13 +64,12 @@ return Application::configure(basePath: dirname(__DIR__))
                     $supplier->user->notify(
                         Notification::make()
                             ->title('Document Expiry Reminder')
-                            ->body('Your document "' . $attachment->document->title . '" is set to expire on ' . Carbon::parse($attachment->validity_date)->toFormattedDateString() . '. Please take the necessary actions to renew it.')
+                            ->body('Your document "'.$attachment->document->title.'" is set to expire on '.Carbon::parse($attachment->validity_date)->toFormattedDateString().'. Please take the necessary actions to renew it.')
                             ->warning()
                             ->toDatabase(),
                     );
                 }
             }
-
 
             // Expired Notification
             $count = $expiredAttachments->count();
@@ -80,7 +78,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 $system_administrator->notify(
                     Notification::make()
                         ->title('Document Expiration')
-                        ->body($count . ' ' . ' document/s have expired today. ' . now()->toDateString())
+                        ->body($count.' '.' document/s have expired today. '.now()->toDateString())
                         ->danger()
                         ->actions([
                             Action::make('view')

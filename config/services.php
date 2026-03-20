@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'n8n' => [
+        'chat_webhook_url' => env('N8N_CHAT_WEBHOOK_URL'),
+    ],
+
 ];

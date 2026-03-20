@@ -3,13 +3,22 @@
 namespace App\Providers\Filament;
 
 use App\Enums\NavigationGroup;
+use App\Filament\Pages\Auth\EditProfile;
+use App\Filament\Pages\Auth\Login;
+use App\Filament\Pages\Dashboard;
+use Filament\Auth\MultiFactor\App\AppAuthentication;
+use Filament\Auth\MultiFactor\Email\EmailAuthentication;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\Width;
+use Filament\Support\Icons\Heroicon;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -18,14 +27,6 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Filament\Support\Enums\Width;
-use Filament\Auth\MultiFactor\App\AppAuthentication;
-use Filament\Auth\MultiFactor\Email\EmailAuthentication;
-use App\Filament\Pages\Auth\EditProfile;
-use App\Filament\Pages\Auth\Login;
-use App\Filament\Pages\Dashboard;
-use Filament\Navigation\NavigationItem;
-use Filament\Support\Icons\Heroicon;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -38,12 +39,13 @@ class AdminPanelProvider extends PanelProvider
             ->login(Login::class)
             ->passwordReset()
             ->darkMode(false)
+            ->renderHook(PanelsRenderHook::SCRIPTS_AFTER, fn (): string => view('filament.components.n8n-chat')->render())
             ->globalSearch(false)
             ->databaseNotifications()
             ->colors([
                 // 'primary' => Color::Amber,
             ])
-            ->brandLogo(asset('project_files/SEPS Logo.png'))
+            ->brandLogo(asset('storage/project_files/SEPS Logo.png'))
             ->brandLogoHeight('2.5rem')
             ->favicon(asset('project_files/SEPS Logo.png'))
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
@@ -92,6 +94,6 @@ class AdminPanelProvider extends PanelProvider
                     ->brandName('SEPS Davao del Sur'),
                 EmailAuthentication::make(),
             ]);
-            // ], isRequired: true);
+        // ], isRequired: true);
     }
 }

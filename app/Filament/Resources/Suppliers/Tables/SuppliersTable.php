@@ -3,12 +3,12 @@
 namespace App\Filament\Resources\Suppliers\Tables;
 
 use App\Enums\ProcType;
-use App\Enums\Status;
 use App\Enums\UserRole;
 use App\Filament\GlobalActions\SecureDeleteAction;
 use App\Filament\Resources\Suppliers\Schemas\AssignForm;
 use App\Filament\Resources\Suppliers\SupplierResource;
 use App\Helpers\SupplierStatus;
+use App\Models\LobCategory;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -19,17 +19,19 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
-use Filament\Tables\Table;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class SuppliersTable
 {
@@ -49,7 +51,7 @@ class SuppliersTable
                     ->getStateUsing(fn ($record, $table): array => [
                         TextColumn::make('business_name')->record($record)->weight(FontWeight::Bold)->size(TextSize::Large)->color('primary')->table($table)->inline(),
                         TextColumn::make('user.email')->record($record)->prefix('System user: ')
-                            ->formatStateUsing(fn ($record) => $record->user->name . ' (' . $record->user->email . ')')
+                            ->formatStateUsing(fn ($record) => $record->user->name.' ('.$record->user->email.')')
                             ->icon(Heroicon::User)->table($table)->inline(),
                         TextColumn::make('website')->record($record)->icon(Heroicon::GlobeAlt)->table($table)->inline(),
                     ])
@@ -82,14 +84,15 @@ class SuppliersTable
                             $labelsWithColors = array_merge($labelsWithColors, [
                                 "<span class='mb-1 fi-color fi-color-{$item['color']} fi-text-color-700 dark:fi-text-color-300 fi-badge fi-size-sm'>
                                     <div class='inline-block px-2 rounded-full text-xs font-medium fi-color fi-color-{$item['color']} fi-text-color-600'>{$item['label']}</div>
-                                </span>"
+                                </span>",
                             ]);
                         }
+
                         return $labelsWithColors;
                     })
                     ->color('success')
                     ->html()
-                    ->label('Status')
+                    ->label('Status'),
             ])
             ->filters([
                 TrashedFilter::make()->native(false)
@@ -115,7 +118,7 @@ class SuppliersTable
                             return null;
                         }
 
-                        return 'Eligibility Status: ' . ($data['eligibility_status'] === 'eligible' ? 'Eligible Suppliers' : 'Ineligible Suppliers');
+                        return 'Eligibility Status: '.($data['eligibility_status'] === 'eligible' ? 'Eligible Suppliers' : 'Ineligible Suppliers');
                     })
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -130,7 +133,7 @@ class SuppliersTable
                                         'lob_statuses',
                                     ])->chunkById(200, function ($suppliers) use ($eligibleSupplierIds, $ineligibleSupplierIds) {
                                         foreach ($suppliers as $supplier) {
-                                            $supplierStatus = new \App\Helpers\SupplierStatus($supplier);
+                                            $supplierStatus = new SupplierStatus($supplier);
                                             if ($supplierStatus->isFullyValidated()) {
                                                 $eligibleSupplierIds->push($supplier->id);
                                             } else {
@@ -142,6 +145,7 @@ class SuppliersTable
                                     if ($status === 'eligible') {
                                         return $query->whereIn('id', $eligibleSupplierIds);
                                     }
+
                                     return $query->whereIn('id', $ineligibleSupplierIds);
                                 }
                             );
@@ -152,7 +156,7 @@ class SuppliersTable
                     ->schema([
                         Select::make('line_of_business')
                             ->options(function () {
-                                return \App\Models\LobCategory::pluck('title', 'id')->toArray();
+                                return LobCategory::pluck('title', 'id')->toArray();
                             })
                             ->multiple()
                             ->native(false)
@@ -163,9 +167,9 @@ class SuppliersTable
                             return null;
                         }
 
-                        $lobCategories = \App\Models\LobCategory::findMany($data['line_of_business']);
+                        $lobCategories = LobCategory::findMany($data['line_of_business']);
 
-                        return 'Line of Business: ' . ($lobCategories->isNotEmpty() ? $lobCategories->pluck('title')->implode(', ') : '');
+                        return 'Line of Business: '.($lobCategories->isNotEmpty() ? $lobCategories->pluck('title')->implode(', ') : '');
                     })
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -227,9 +231,10 @@ class SuppliersTable
                         ->color('gray')
                         ->tooltip('View activity logs')
                         ->icon(Heroicon::OutlinedDocumentText)
-                        ->url(fn ($record) => SupplierResource::getUrl('activities', ['record' => $record]))
+                        ->visible(fn ($record): bool => (($user = Auth::user()) !== null) && Gate::forUser($user)->allows('viewActivities', $record))
+                        ->url(fn ($record) => SupplierResource::getUrl('activities', ['record' => $record])),
 
-                ])->buttonGroup()
+                ])->buttonGroup(),
             ])
             ->toolbarActions([
                 // BulkActionGroup::make([

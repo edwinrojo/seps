@@ -19,13 +19,6 @@
     </style>
     @endif
 </head>
-<script type="module">
-    import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
-
-    createChat({
-        webhookUrl: 'https://gemmiform-unviable-homer.ngrok-free.dev'
-    });
-</script>
 <body class="bg-slate-50 font-sans text-slate-800">
 
     <div id="app">
@@ -37,7 +30,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                     </svg> --}}
                     {{-- Project Logo --}}
-                    <img src="{{ asset('project_files/SEPS Logo.png') }}" alt="Logo" class="h-14">
+                    <img src="{{ asset('/storage/project_files/SEPS Logo.png') }}" alt="Logo" class="h-14">
                     <span class="text-xl font-bold text-slate-900">{{ env('APP_NAME') }}</span>
                 </div>
                 {{-- check if not authenticated --}}
@@ -173,7 +166,7 @@
                         <!-- Developer 1 -->
                         <div class="flex flex-col items-center text-center">
                             <img
-                            src="{{ asset('project_files/Edwin.jpg') }}"
+                            src="{{ asset('storage/project_files/Edwin.jpg') }}"
                             alt="Developer Avatar"
                             class="w-32 h-32 rounded-full object-cover mb-4 shadow-md"
                             />

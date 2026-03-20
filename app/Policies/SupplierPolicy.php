@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Enums\UserRole;
 use App\Models\Supplier;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class SupplierPolicy
 {
@@ -23,6 +22,14 @@ class SupplierPolicy
     public function view(User $user, Supplier $supplier): bool
     {
         return $user->role === UserRole::Twg || $user->role === UserRole::Administrator || $user->role === UserRole::EndUser;
+    }
+
+    /**
+     * Determine whether the user can view supplier activities.
+     */
+    public function viewActivities(User $user, Supplier $supplier): bool
+    {
+        return $user->role === UserRole::Administrator;
     }
 
     /**

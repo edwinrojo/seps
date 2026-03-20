@@ -13,6 +13,7 @@
         "flowframe/laravel-trend": "^0.4.0",
         "hugomyb/filament-media-action": "^4.0",
         "laravel/framework": "^12.0",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "mailersend/laravel-driver": "^2.11",
         "pxlrbt/filament-activity-log": "^2.1",
