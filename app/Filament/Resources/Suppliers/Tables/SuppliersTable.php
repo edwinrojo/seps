@@ -183,7 +183,7 @@ class SuppliersTable
                                 }
                             );
                     }),
-            ], layout: FiltersLayout::AfterContent)
+            ], layout: FiltersLayout::AboveContentCollapsible)
             ->recordActions([
                 ViewAction::make()
                     ->extraAttributes(['style' => 'visibility: hidden;']),

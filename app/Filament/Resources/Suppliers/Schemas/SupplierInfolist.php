@@ -12,17 +12,12 @@ use App\Livewire\StatusView;
 use App\Livewire\SupplierDocumentsTable;
 use App\Models\Status;
 use Filament\Actions\Action;
-use Filament\Forms\Components\FileUpload;
-use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
-use Filament\Schemas\Components\Actions;
-use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Livewire;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\FontWeight;
@@ -30,9 +25,7 @@ use Filament\Support\Enums\TextSize;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Hugomyb\FilamentMediaAction\Actions\MediaAction;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\HtmlString;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class SupplierInfolist
 {
@@ -68,7 +61,8 @@ class SupplierInfolist
                             ->label('Email Address')
                             ->color('primary'),
                         TextEntry::make('website')
-                            ->icon(Heroicon::GlobeAlt)
+                            ->url(fn ($state) => $state ? (str_starts_with($state, 'http') ? $state : 'https://'.$state) : null)
+                            ->openUrlInNewTab()
                             ->label('Website')
                             ->color('primary'),
                         TextEntry::make('mobile_number')
@@ -111,7 +105,7 @@ class SupplierInfolist
                             })
                             ->schema([
                                 Grid::make(2)
-                                    ->schema(BusinessInformation::getSchema())
+                                    ->schema(BusinessInformation::getSchema()),
                             ])
                             ->after(fn ($livewire) => $livewire->dispatch('refreshInfolist'))
                             ->action(function (array $data, $record): void {
@@ -138,7 +132,8 @@ class SupplierInfolist
                         if (! $status) {
                             return new HtmlString('Line of Business');
                         }
-                        return new HtmlString('Line of Business <span class="text-sm font-normal text-custom-600 fi-color-'.$status->status->getColor().'">(' . ($status->status->getLabel() ?? 'Pending for Validation') . ')</span>');
+
+                        return new HtmlString('Line of Business <span class="text-sm font-normal text-custom-600 fi-color-'.$status->status->getColor().'">('.($status->status->getLabel() ?? 'Pending for Validation').')</span>');
                     })
                     ->description('Below are the line of business details you have provided. To make changes, click the "Manage Profile" button above.')
                     ->icon(Heroicon::Briefcase)
@@ -172,6 +167,7 @@ class SupplierInfolist
                                     })
                                     ->values()
                                     ->toArray();
+
                                 return $data['supplierLobs'];
                             })
                             ->schema([
@@ -207,8 +203,8 @@ class SupplierInfolist
                                         'statuses' => $record->lob_statuses,
                                     ];
                                 })
-                                ->key('lob-status-view-')
-                                ->extraAttributes(['class' => 'ms-5'])
+                                    ->key('lob-status-view-')
+                                    ->extraAttributes(['class' => 'ms-5']),
                             ]),
                     ])
                     ->afterHeader([
@@ -246,7 +242,7 @@ class SupplierInfolist
                             })
                             ->schema([
                                 Grid::make(2)
-                                    ->schema(LineOfBusiness::getSchema())
+                                    ->schema(LineOfBusiness::getSchema()),
                             ])
                             ->after(fn ($livewire) => $livewire->dispatch('refreshInfolist'))
                             ->action(function (array $data, $record): void {
@@ -309,6 +305,7 @@ class SupplierInfolist
                                     ->iconColor('primary')
                                     ->formatStateUsing(function ($record) {
                                         $status = $record->statuses()->latest()->first();
+
                                         return $status ? $status->status_date->format('F j, Y, g:i a') : $record->created_at->format('F j, Y, g:i a');
                                     })
                                     ->color('primary'),
@@ -333,11 +330,11 @@ class SupplierInfolist
                                                             'statuses' => $record->statuses,
                                                         ];
                                                     })
-                                                    ->key('address-status-view-'.$record->id)
-                                                    ->extraAttributes(['class' => 'ms-5'])
+                                                        ->key('address-status-view-'.$record->id)
+                                                        ->extraAttributes(['class' => 'ms-5']),
                                                 ]),
                                             MediaAction::make('storefront')
-                                                ->hidden(fn ($state) => !$state)
+                                                ->hidden(fn ($state) => ! $state)
                                                 ->icon(Heroicon::OutlinedPhoto)
                                                 ->color('primary')
                                                 ->modalAlignment(Alignment::Center)
@@ -345,11 +342,11 @@ class SupplierInfolist
                                                 ->button()
                                                 ->modalWidth(Width::FourExtraLarge)
                                                 ->media(function ($state) {
-                                                    return '/' . $state;
+                                                    return '/'.$state;
                                                 }),
                                         ];
-                                    })
-                            ])
+                                    }),
+                            ]),
                     ])
                     ->afterHeader([
                         Action::make('manage_address_information')

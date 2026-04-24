@@ -3,14 +3,15 @@
 namespace App\Models;
 
 use App\Enums\Status as EnumStatus;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Attachment extends Model
 {
-    use HasUlids;
+    use HasFactory, HasUlids;
 
     protected $fillable = [
         'supplier_id',
@@ -19,6 +20,13 @@ class Attachment extends Model
         'validity_date',
         'file_size',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'validity_date' => 'date',
+        ];
+    }
 
     public function supplier(): BelongsTo
     {
@@ -37,7 +45,11 @@ class Attachment extends Model
 
     public function getIsValidatedAttribute(): bool
     {
-        $latest_status = $this->statuses()->latest()->first();
+        $latest_status = $this->statuses()
+            ->latest('status_date')
+            ->latest('id')
+            ->first();
+
         return $latest_status && $latest_status->status === EnumStatus::Validated;
     }
 }

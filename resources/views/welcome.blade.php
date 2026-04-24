@@ -162,7 +162,7 @@
                         The system was built by dedicated developers committed to improving transparency and efficiency in public procurement.
                         </p>
                     </div>
-                    <div class="grid md:grid-cols-2 gap-10 text-center">
+                    <div class="grid md:grid-cols-4 gap-8 text-center">
                         <!-- Developer 1 -->
                         <div class="flex flex-col items-center text-center">
                             <img
@@ -173,7 +173,46 @@
                             <h3 class="text-xl font-semibold text-gray-900">Edwin R. Rojo Jr.</h3>
                             <p class="text-pink-600 font-medium mb-2">System Architect & Lead Developer</p>
                             <p class="text-gray-600 max-w-xs">
-                            Leads the overall system architecture, backend implementation, and database design. He ensures that the system is built on a secure, scalable, and efficient foundation aligned with government procurement standards. He also oversees system integration, optimizes performance, and guides the technical direction of the project to ensure that all modules function cohesively and reliably.
+                            Leads the overall system architecture, backend implementation, and database design. He ensures that the system is built on a secure, scalable, and efficient foundation aligned with government procurement standards.
+                            </p>
+                        </div>
+
+                        <div class="flex flex-col items-center text-center">
+                            <img
+                            src="{{ asset('storage/project_files/James.png') }}"
+                            alt="Developer Avatar"
+                            class="w-32 h-32 rounded-full object-cover mb-4 shadow-md"
+                            />
+                            <h3 class="text-xl font-semibold text-gray-900">James Tubiano</h3>
+                            <p class="text-pink-600 font-medium mb-2">Systems Analyst</p>
+                            <p class="text-gray-600 max-w-xs">
+                            Assists in analyzing system requirements, identifying potential issues, and proposing solutions to improve system performance and user experience. He collaborates with developers and stakeholders to ensure that the system meets the needs of its users and aligns with organizational goals.
+                            </p>
+                        </div>
+
+                        <div class="flex flex-col items-center text-center">
+                            <img
+                            src="{{ asset('storage/project_files/Edgardo.jpg') }}"
+                            alt="Developer Avatar"
+                            class="w-32 h-32 rounded-full object-cover mb-4 shadow-md"
+                            />
+                            <h3 class="text-xl font-semibold text-gray-900">Edgardo Rojas Jr.</h3>
+                            <p class="text-pink-600 font-medium mb-2">Technical Writer</p>
+                            <p class="text-gray-600 max-w-xs">
+                            Creates and maintains technical documentation for the system, ensuring that users and developers have access to clear and comprehensive information about its features and functionality. He collaborates with various teams to gather information and translate complex technical concepts into accessible language.
+                            </p>
+                        </div>
+
+                        <div class="flex flex-col items-center text-center">
+                            <img
+                            src="{{ asset('storage/project_files/Marlo.png') }}"
+                            alt="Developer Avatar"
+                            class="w-32 h-32 rounded-full object-cover mb-4 shadow-md"
+                            />
+                            <h3 class="text-xl font-semibold text-gray-900">Marlo Romero</h3>
+                            <p class="text-pink-600 font-medium mb-2">Project Manager</p>
+                            <p class="text-gray-600 max-w-xs">
+                            Oversees the project timeline, coordinates between different teams, and ensures that the project stays on track and meets its deadlines. He manages resources, facilitates communication among stakeholders, and addresses any issues that arise during the development process to ensure successful project delivery.
                             </p>
                         </div>
 

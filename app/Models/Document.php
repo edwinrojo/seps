@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use App\Enums\ProcType;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Document extends Model
 {
-    use HasUlids;
+    use HasFactory, HasUlids;
 
     protected $fillable = [
         'document_type_id',

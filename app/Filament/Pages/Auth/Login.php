@@ -2,24 +2,32 @@
 
 namespace App\Filament\Pages\Auth;
 
-use App\Livewire\ProjectLogo;
-use Filament\Auth\Pages\Login as BasePage;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
-use Illuminate\Validation\ValidationException;
 use Filament\Auth\Http\Responses\Contracts\LoginResponse;
 use Filament\Auth\MultiFactor\Contracts\HasBeforeChallengeHook;
+use Filament\Auth\Pages\Login as BasePage;
 use Filament\Facades\Filament;
 use Filament\Models\Contracts\FilamentUser;
-use Filament\Schemas\Components\Livewire;
-use Filament\Schemas\Components\RenderHook;
 use Filament\Schemas\Schema;
-use Filament\View\PanelsRenderHook;
 use Illuminate\Auth\SessionGuard;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Validation\ValidationException;
 
 class Login extends BasePage
 {
     protected string $view = 'filament.pages.auth.login';
+
+    public function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                $this->getEmailFormComponent()
+                    ->extraInputAttributes(['tabindex' => 1]),
+                $this->getPasswordFormComponent()
+                    ->extraInputAttributes(['tabindex' => 2]),
+                $this->getRememberFormComponent(),
+            ]);
+    }
 
     public function authenticate(): ?LoginResponse
     {

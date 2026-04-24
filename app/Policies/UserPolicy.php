@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Enums\UserRole;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class UserPolicy
 {
@@ -20,6 +19,14 @@ class UserPolicy
      * Determine whether the user can view the model.
      */
     public function view(User $user, User $model): bool
+    {
+        return $user->role === UserRole::Administrator;
+    }
+
+    /**
+     * Determine whether the user can view user activities.
+     */
+    public function viewActivities(User $user): bool
     {
         return $user->role === UserRole::Administrator;
     }

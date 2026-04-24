@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Address extends Model
 {
-    use HasUlids;
+    use HasFactory, HasUlids;
 
     protected $fillable = [
         'supplier_id',
@@ -21,7 +22,7 @@ class Address extends Model
         'barangay_id',
         'province_id',
         'country',
-        'zip_code'
+        'zip_code',
     ];
 
     public function getFullAddressAttribute(): string
@@ -71,7 +72,11 @@ class Address extends Model
 
     public function getIsValidatedAttribute(): bool
     {
-        $latestStatus = $this->statuses()->latest()->first();
+        $latestStatus = $this->statuses()
+            ->latest('status_date')
+            ->latest('id')
+            ->first();
+
         return $latestStatus && $latestStatus->status === \App\Enums\Status::Validated;
     }
 }

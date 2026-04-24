@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Suppliers\Actions;
 use App\Enums\Status;
 use App\Models\Attachment;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class AttachDocument
@@ -12,7 +13,7 @@ class AttachDocument
     public static function handle($supplier, $record, $data)
     {
         $attachment = $supplier->attachments()->where('document_id', $record->id)->first();
-        if (!$attachment) {
+        if (! $attachment) {
             // Create new pivot record
             $supplier->attachments()->create([
                 'document_id' => $record->id,
@@ -42,17 +43,18 @@ class AttachDocument
     public static function createStatus($supplier, $record, $data)
     {
         $attachment = $supplier->attachments()->where('document_id', $record->id)->first();
-        $remarks = match (request()->user()->role->value) {
+        $user = request()->user() ?? Auth::user();
+        $remarks = match ($user->role->value) {
             'administrator' => 'uploaded and validated by an administrator',
             'supplier' => 'uploaded for review',
             default => 'updated',
         };
         $attachment->statuses()->create([
-            'user_id' => request()->user()->id,
-            'status' => request()->user()->role->value === 'administrator' ? Status::Validated : Status::PendingReview,
+            'user_id' => $user->id,
+            'status' => $user->role->value === 'administrator' ? Status::Validated : Status::PendingReview,
             'statusable_type' => Attachment::class,
             'statusable_id' => $attachment->id,
-            'remarks' => '<p>New document attached on ' . now()->format('F d, Y') . ' with file name "' . basename($data['file_path']) . '" is ' . $remarks . '.</p>',
+            'remarks' => '<p>New document attached on '.now()->format('F d, Y').' with file name "'.basename($data['file_path']).'" is '.$remarks.'.</p>',
             'status_date' => now(),
         ]);
     }

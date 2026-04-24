@@ -7,7 +7,6 @@ use App\Models\Attachment;
 use App\Models\Document;
 use App\Models\Status;
 use Carbon\Carbon;
-use Filament\Schemas\Components\Html;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Support\HtmlString;
 
@@ -18,10 +17,10 @@ class SupplierDocumentsColumns
         return [
             TextColumn::make('title')
                 ->weight('bold')
-                ->tooltip(fn (Document $record): string => $record->description)
-                ->description(fn (Document $record): string => substr($record->description, 0, 70) . (strlen($record->description) > 70 ? '...' : ''))
+                ->tooltip(fn (Document $record): string => $record->description ?? 'No description available')
+                ->description(fn (Document $record): string => substr($record->description, 0, 70).(strlen($record->description) > 70 ? '...' : ''))
                 ->formatStateUsing(function ($record, $state): HtmlString {
-                    return new HtmlString($state . ($record->is_required ? ' - <span class="font-normal" style="color: #c10007;">Required</span>' : ''));
+                    return new HtmlString($state.($record->is_required ? ' - <span class="font-normal" style="color: #c10007;">Required</span>' : ''));
                 })
                 ->searchable(),
             TextColumn::make('validity_date')
@@ -29,6 +28,7 @@ class SupplierDocumentsColumns
                 ->badge()
                 ->color(function (Document $record) use ($supplier) {
                     $attachment = $supplier->attachments()->where('document_id', $record->id)->first();
+
                     return DateColor::getColor($attachment?->validity_date);
                 })
                 ->label('Valid Until')
@@ -36,6 +36,7 @@ class SupplierDocumentsColumns
             TextColumn::make('status')
                 ->state(function (Document $record) use ($supplier) {
                     $attachment = $supplier->attachments()->where('document_id', $record->id)->first();
+
                     return Status::where('statusable_type', Attachment::class)
                         ->where('statusable_id', $attachment?->id)
                         ->latest()
@@ -44,7 +45,8 @@ class SupplierDocumentsColumns
                 ->html()
                 ->formatStateUsing(function ($state): HtmlString {
                     $formatted_datetime = $state?->status_date ? Carbon::parse($state->status_date)->format('F d, Y h:i A') : '';
-                    return new HtmlString($state ? $state->status->getLabel() . '<br>' . $formatted_datetime : null);
+
+                    return new HtmlString($state ? $state->status->getLabel().'<br>'.$formatted_datetime : null);
                 })
                 ->tooltip(function (Document $record) use ($supplier) {
                     $attachment = $supplier->attachments()->where('document_id', $record->id)->first();
@@ -52,10 +54,11 @@ class SupplierDocumentsColumns
                         ->where('statusable_id', $attachment?->id)
                         ->latest()
                         ->first();
+
                     return $latest_status ? $latest_status->remarks : 'No status available';
                 })
                 ->badge()
-                ->color(fn ($state) => $state->status->getColor())
+                ->color(fn ($state) => $state->status->getColor()),
         ];
     }
 }

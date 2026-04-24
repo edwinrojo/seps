@@ -21,11 +21,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class User extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery, HasAvatar, HasEmailAuthentication, HasName, MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
-    use HasApiTokens, HasFactory, HasUlids, Notifiable, SoftDeletes;
+    use HasApiTokens, HasFactory, HasUlids, LogsActivity, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -91,6 +93,13 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     public function getFilamentName(): string
     {
         return $this->name;
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['first_name', 'last_name', 'middle_name', 'suffix', 'role', 'email', 'contact_number', 'status']);
+        // Chain fluent methods for configuration options
     }
 
     public function getFilamentAvatarUrl(): ?string

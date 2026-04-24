@@ -1,0 +1,5 @@
+For data analytics Sir, we implemented a lightweight data analytics pipeline by introducing daily snapshot reporting.
+Instead of computing expensive dashboard metrics in real time, we now generate and store key KPIs each day using scheduled commands.
+
+As we can see here, there are widgets for total supplier counts broken down by eligibility status, document volumes, and monthly validation activity trends.
+Each widget includes historical trend lines so we can track how these metrics evolve over time, helping us identify growth patterns, spot bottlenecks in document processing, and monitor validation completions.

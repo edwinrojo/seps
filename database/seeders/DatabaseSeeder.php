@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\LobCategory;
 use App\Models\Office;
-use App\Models\Twg;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -58,7 +57,7 @@ class DatabaseSeeder extends Seeder
         $twg_user->twg()->create([
             'office_id' => $office->id,
             'position_title' => 'Information Technology Officer II',
-            'twg_type' => 'goods'
+            'twg_type' => 'goods',
         ]);
 
         $end_user = User::create([
@@ -151,6 +150,46 @@ class DatabaseSeeder extends Seeder
             'description' => 'Category for materials used in construction projects.',
         ]);
 
+        $lob_category4 = LobCategory::create([
+            'title' => 'Consulting Services',
+            'description' => 'Category for professional consulting services.',
+        ]);
+
+        $lob_category5 = LobCategory::create([
+            'title' => 'Maintenance and Repair',
+            'description' => 'Category for services related to maintenance and repair.',
+        ]);
+
+        $lob_category6 = LobCategory::create([
+            'title' => 'Pharmaceuticals',
+            'description' => 'Category for pharmaceutical products and medical supplies.',
+        ]);
+
+        $lob_category7 = LobCategory::create([
+            'title' => 'Catering Services',
+            'description' => 'Category for food and catering services.',
+        ]);
+
+        $lob_category8 = LobCategory::create([
+            'title' => 'Medical Supplies',
+            'description' => 'Category for medical equipment and supplies.',
+        ]);
+
+        $lob_category9 = LobCategory::create([
+            'title' => 'Transportation Services',
+            'description' => 'Category for transportation and logistics services.',
+        ]);
+
+        $lob_category10 = LobCategory::create([
+            'title' => 'Printing Services',
+            'description' => 'Category for printing and graphic design services.',
+        ]);
+
+        $lob_category11 = LobCategory::create([
+            'title' => 'Medical Equipment',
+            'description' => 'Category for medical devices and equipment.',
+        ]);
+
         $lob_category1->lobSubcategories()->createMany([
             ['title' => 'ICT Equipment', 'description' => 'Desktops, laptops, and accessories.'],
             ['title' => 'Networking Equipment', 'description' => 'Routers, switches, and other networking devices.'],
@@ -161,6 +200,31 @@ class DatabaseSeeder extends Seeder
             ['title' => 'Paper', 'description' => 'Various types of paper for printing and writing.'],
             ['title' => 'Office Furniture', 'description' => 'Desks, chairs, and other office furniture.'],
             ['title' => 'Stationery', 'description' => 'Pens, pencils, and other stationery items.'],
+        ]);
+
+        $lob_category4->lobSubcategories()->createMany([
+            ['title' => 'Business Consulting', 'description' => 'Strategic and operational consulting services.'],
+            ['title' => 'IT Consulting', 'description' => 'Technology-related consulting services.'],
+        ]);
+
+        $lob_category5->lobSubcategories()->createMany([
+            ['title' => 'Preventive Maintenance', 'description' => 'Scheduled maintenance to prevent equipment failure.'],
+            ['title' => 'Corrective Maintenance', 'description' => 'Repairs made after equipment failure.'],
+        ]);
+
+        $lob_category6->lobSubcategories()->createMany([
+            ['title' => 'Prescription Drugs', 'description' => 'Medications that require a prescription.'],
+            ['title' => 'Over-the-Counter Drugs', 'description' => 'Medications available without a prescription.'],
+        ]);
+
+        $lob_category7->lobSubcategories()->createMany([
+            ['title' => 'Event Catering', 'description' => 'Catering services for special events.'],
+            ['title' => 'Regular Catering', 'description' => 'Regular catering services for businesses.'],
+        ]);
+
+        $lob_category8->lobSubcategories()->createMany([
+            ['title' => 'Personal Protective Equipment', 'description' => 'PPE for healthcare workers.'],
+            ['title' => 'Medical Consumables', 'description' => 'Items like gloves, masks, and syringes.'],
         ]);
 
         $this->call(ValidationPurposeSeeder::class);

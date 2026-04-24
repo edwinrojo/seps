@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
+use App\Filament\Resources\Users\UserResource;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -32,6 +34,7 @@ class UsersTable
                 if ($currentUserId) {
                     $query->where('id', '!=', $currentUserId);
                 }
+
                 return $query;
             })
             ->columns([
@@ -58,7 +61,7 @@ class UsersTable
                             case 'suppliers':
                                 return $record->supplier?->business_name ?? 'No business profile';
                             case 'twgs':
-                                return 'TWG for ' . $record->twg?->twg_type->getLabel();
+                                return 'TWG for '.$record->twg?->twg_type->getLabel();
                             case 'end-users':
                                 return $record->endUser?->designation;
                             case 'all':
@@ -117,6 +120,11 @@ class UsersTable
             ->recordActions([
                 ViewAction::make()->extraAttributes(['style' => 'visibility: hidden;']),
                 EditAction::make(),
+                Action::make('activities')
+                    ->color('gray')
+                    ->tooltip('View activity logs')
+                    ->icon(Heroicon::OutlinedDocumentText)
+                    ->url(fn ($record) => UserResource::getUrl('activities', ['record' => $record])),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

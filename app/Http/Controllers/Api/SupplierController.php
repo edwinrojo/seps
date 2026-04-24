@@ -14,6 +14,7 @@ class SupplierController extends Controller
     public function index(): SupplierCollection
     {
         $suppliers = Supplier::query()
+            ->whereHas('supplierLobs')
             ->with(['supplierLobs.lobCategory', 'supplierLobs.lobSubcategory'])
             ->orderBy('business_name')
             ->get();

@@ -9,9 +9,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -43,7 +41,7 @@ class SiteValidationForm
                             ->helperText('Select the address of the supplier being validated.')
                             ->options(function (callable $get) {
                                 $supplierId = $get('supplier_id');
-                                if (!$supplierId) {
+                                if (! $supplierId) {
                                     return [];
                                 }
 
@@ -52,14 +50,17 @@ class SiteValidationForm
                                 foreach ($addresses as $address) {
                                     $options[$address->id] = $address->getFullAddressAttribute();
                                 }
+
                                 return $options;
                             })
                             ->native(false)
                             ->required(),
                         MarkdownEditor::make('findings')
+                            ->required()
                             ->label('Findings')
                             ->helperText('Provide a detailed account of the findings from the site validation. This will be reflected in the validation report.'),
                         MarkdownEditor::make('recommendations')
+                            ->required()
                             ->label('Recommendations')
                             ->helperText('Provide recommendations based on the findings of the site validation. This will be reflected in the validation report.'),
                         FileUpload::make('site_images')
@@ -70,7 +71,7 @@ class SiteValidationForm
                             ->image()
                             ->getUploadedFileNameForStorageUsing(
                                 fn (TemporaryUploadedFile $file): string => (string) str($file->getClientOriginalName())
-                                    ->prepend((string) now()->format('YmdHis') . '_')
+                                    ->prepend((string) now()->format('YmdHis').'_')
                             )
                             ->helperText('Upload images taken during the site validation. You can upload multiple images.')
                             ->directory('site_images')
@@ -109,7 +110,7 @@ class SiteValidationForm
 
                                         // Remove current item's selection from the exclusion list
                                         if ($state) {
-                                            $selectedIds = array_filter($selectedIds, fn($id) => $id !== $state);
+                                            $selectedIds = array_filter($selectedIds, fn ($id) => $id !== $state);
                                         }
 
                                         return $validationPurposes->pluck('purpose', 'id')->mapWithKeys(function ($title, $id) use ($validationPurposes, $selectedIds) {
@@ -119,7 +120,8 @@ class SiteValidationForm
                                             }
 
                                             $description = $validationPurposes->where('id', $id)->first()->description;
-                                            return [$id => '<b class="text-primary-600">'.$title.'</b>' . ($description ? "<span style='display: block;' class='text-sm text-gray-500'>$description</span>" : '')];
+
+                                            return [$id => '<b class="text-primary-600">'.$title.'</b>'.($description ? "<span style='display: block;' class='text-sm text-gray-500'>$description</span>" : '')];
                                         });
                                     })
                                     ->allowHtml()
@@ -129,22 +131,24 @@ class SiteValidationForm
                                     ->required(),
                                 Radio::make('status')
                                     ->label('Address Status')
-                                    ->hidden(function (callable $get){
+                                    ->hidden(function (callable $get) {
                                         $validation_purpose = ValidationPurpose::find($get('validation_purpose_id'));
-                                        return $validation_purpose ? !$validation_purpose->is_iv : false;
+
+                                        return $validation_purpose ? ! $validation_purpose->is_iv : false;
                                     })
                                     ->belowLabel('The purpose you selected is included in the criteria to determine supplier eligibility. Choose approve if the address meets the criteria, or reject if it does not.')
                                     ->options([
                                         'approve' => 'Approve',
-                                        'reject' => 'Reject'
+                                        'reject' => 'Reject',
                                     ])
                                     ->required()
                                     ->inline(),
                                 Textarea::make('status_remarks')
                                     ->label('Remarks')
-                                    ->hidden(function (callable $get){
+                                    ->hidden(function (callable $get) {
                                         $validation_purpose = ValidationPurpose::find($get('validation_purpose_id'));
-                                        return $validation_purpose ? !$validation_purpose->is_iv : false;
+
+                                        return $validation_purpose ? ! $validation_purpose->is_iv : false;
                                     })
                                     ->helperText('Provide remarks regarding the address status.')
                                     ->rows(3)

@@ -3,14 +3,16 @@
 namespace App\Filament\Widgets;
 
 use App\Models\LobCategory;
-use App\Models\SupplierLob;
 use Filament\Widgets\ChartWidget;
 
 class LOBChart extends ChartWidget
 {
     protected static ?int $sort = 3;
+
     protected ?string $heading = 'Line of Business Overview';
+
     protected ?string $description = 'A quick overview of the distribution of suppliers across different lines of business.';
+
     protected ?string $pollingInterval = null;
 
     protected function getData(): array
@@ -35,6 +37,13 @@ class LOBChart extends ChartWidget
                         'rgb(75, 192, 192)',
                         'rgb(153, 102, 255)',
                         'rgb(255, 159, 64)',
+                        'rgb(201, 203, 207)',
+                        'rgb(87, 120, 100)',
+                        'rgb(100, 87, 120)',
+                        'rgb(120, 100, 87)',
+                        'rgb(200, 100, 150)',
+                        'rgb(150, 200, 100)',
+
                     ],
                     'hoverOffset' => 20,
                 ],

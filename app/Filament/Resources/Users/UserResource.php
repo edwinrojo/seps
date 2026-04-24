@@ -26,7 +26,7 @@ class UserResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
-    protected static string | UnitEnum | null $navigationGroup = NavigationGroup::Accounts;
+    protected static string|UnitEnum|null $navigationGroup = NavigationGroup::Accounts;
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -61,6 +61,7 @@ class UserResource extends Resource
             'create' => CreateUser::route('/create'),
             'view' => ViewUser::route('/{record}'),
             'edit' => EditUser::route('/{record}/edit'),
+            'activities' => Pages\ListUserActivities::route('/{record}/activities'),
         ];
     }
 
